@@ -1,24 +1,20 @@
 import { uuid } from 'uuidv4';
-import Joi from 'joi';
 import { Result } from '../../../../kernel/Result/Result.js';
-import { ChampionshipDTO } from '../../DTO/ChampionshipDTO.js';
+import { DriverDTO } from '../../DTO/DriverDTO.js';
+import Joi from 'joi';
 import {
   Auditable,
   AuditableProps,
 } from '../../../../kernel/core/entity/Auditable.js';
 
-export interface CreateChampionshipProps {
+export interface CreateDriverProps extends AuditableProps {
   name: string;
-  rounds: number;
-  stage: number;
 }
 
-export interface ChampionshipProps
-  extends CreateChampionshipProps,
-    AuditableProps {}
+export interface DriverProps extends CreateDriverProps, AuditableProps {}
 
-export class Championship extends Auditable {
-  constructor(protected props: ChampionshipProps) {
+export class Driver extends Auditable {
+  constructor(protected props: DriverProps) {
     super(props);
   }
 
@@ -26,20 +22,10 @@ export class Championship extends Auditable {
     return this.props.name;
   }
 
-  get rounds(): number {
-    return this.props.rounds;
-  }
-
-  get stage(): number {
-    return this.props.stage;
-  }
-
-  static create(props: CreateChampionshipProps): Result<Championship> {
-    const validated = Championship.validate({
+  static create(props: CreateDriverProps): Result<Driver> {
+    const validated = Driver.validate({
       id: uuid(),
       name: props.name,
-      rounds: props.rounds,
-      stage: 0,
       createdAt: new Date(),
       updatedAt: undefined,
       deletedAt: undefined,
@@ -49,11 +35,11 @@ export class Championship extends Auditable {
       return Result.fail(validated.error);
     }
 
-    return Result.ok(new Championship(validated.data));
+    return Result.ok(new Driver(validated.data));
   }
 
-  static reconstitute(props: ChampionshipDTO): Result<Championship> {
-    const validated = Championship.validate({
+  static reconstitute(props: DriverDTO): Result<Driver> {
+    const validated = Driver.validate({
       ...props,
       id: uuid(),
       createdAt: props.createdAt ? new Date(props.createdAt) : undefined,
@@ -65,15 +51,13 @@ export class Championship extends Auditable {
       return Result.fail(validated.error);
     }
 
-    return Result.ok<Championship>(new Championship(validated.data));
+    return Result.ok<Driver>(new Driver(validated.data));
   }
 
-  static validate(data: ChampionshipProps): Result<ChampionshipProps> {
+  static validate(data: DriverProps): Result<DriverProps> {
     const schema = {
       id: Joi.string().uuid().required(),
       name: Joi.string().min(1).max(255).required(),
-      rounds: Joi.number().min(1).max(10).required(),
-      stage: Joi.number().max(10).required(),
       createdAt: Joi.object().instance(Date).required(),
       updatedAt: Joi.object().instance(Date).optional(),
       deletedAt: Joi.object().instance(Date).optional(),
@@ -88,12 +72,10 @@ export class Championship extends Auditable {
     return Result.ok(value);
   }
 
-  toDTO(): ChampionshipDTO {
+  toDTO(): DriverDTO {
     return {
       id: this.id,
       name: this.name,
-      rounds: this.rounds,
-      stage: this.stage,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt ? this.updatedAt.toISOString() : null,
       deletedAt: this.props.deletedAt

@@ -1,0 +1,826 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input AddScoresToChampionshipInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input AddScoresToDriverInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+type Championship {
+  createdAt: DateTime!
+  deletedAt: DateTime!
+  id: String!
+  name: String!
+  rounds: Int!
+  scores(
+    """Specify to filter the records returned."""
+    filter: ScoreFilter! = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging! = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [ScoreSort!]! = []
+  ): ChampionshipScoresConnection
+  stage: Int!
+  updatedAt: DateTime!
+}
+
+type ChampionshipAggregateGroupBy {
+  createdAt: DateTime
+  deletedAt: DateTime
+  name: String
+  rounds: Int
+  stage: Int
+  updatedAt: DateTime
+}
+
+type ChampionshipAvgAggregate {
+  rounds: Float
+  stage: Float
+}
+
+type ChampionshipConnection {
+  """Array of nodes."""
+  nodes: [Championship!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type ChampionshipCountAggregate {
+  createdAt: Int
+  deletedAt: Int
+  name: Int
+  rounds: Int
+  stage: Int
+  updatedAt: Int
+}
+
+input ChampionshipDeleteFilter {
+  and: [ChampionshipDeleteFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  name: StringFieldComparison
+  or: [ChampionshipDeleteFilter!]
+  rounds: IntFieldComparison
+  stage: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type ChampionshipDeleteResponse {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: String
+  name: String
+  rounds: Int
+  stage: Int
+  updatedAt: DateTime
+}
+
+input ChampionshipFilter {
+  and: [ChampionshipFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  name: StringFieldComparison
+  or: [ChampionshipFilter!]
+  rounds: IntFieldComparison
+  scores: ChampionshipFilterScoreFilter
+  stage: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+input ChampionshipFilterScoreFilter {
+  and: [ChampionshipFilterScoreFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  or: [ChampionshipFilterScoreFilter!]
+  points: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type ChampionshipMaxAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  name: String
+  rounds: Int
+  stage: Int
+  updatedAt: DateTime
+}
+
+type ChampionshipMinAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  name: String
+  rounds: Int
+  stage: Int
+  updatedAt: DateTime
+}
+
+type ChampionshipScoresConnection {
+  """Array of nodes."""
+  nodes: [Score!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+input ChampionshipSort {
+  direction: SortDirection!
+  field: ChampionshipSortFields!
+  nulls: SortNulls
+}
+
+enum ChampionshipSortFields {
+  createdAt
+  deletedAt
+  name
+  rounds
+  stage
+  updatedAt
+}
+
+type ChampionshipSumAggregate {
+  rounds: Float
+  stage: Float
+}
+
+input ChampionshipUpdateFilter {
+  and: [ChampionshipUpdateFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  name: StringFieldComparison
+  or: [ChampionshipUpdateFilter!]
+  rounds: IntFieldComparison
+  stage: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+input CreateChampionshipInput {
+  name: String!
+  rounds: Float!
+  stage: Float!
+}
+
+input CreateDriverInput {
+  name: String!
+}
+
+input CreateManyChampionshipsInput {
+  """Array of records to create"""
+  championships: [CreateChampionshipInput!]!
+}
+
+input CreateManyDriversInput {
+  """Array of records to create"""
+  drivers: [CreateDriverInput!]!
+}
+
+input CreateManyScoresInput {
+  """Array of records to create"""
+  scores: [CreateScoreInput!]!
+}
+
+input CreateOneChampionshipInput {
+  """The record to create"""
+  championship: CreateChampionshipInput!
+}
+
+input CreateOneDriverInput {
+  """The record to create"""
+  driver: CreateDriverInput!
+}
+
+input CreateOneScoreInput {
+  """The record to create"""
+  score: CreateScoreInput!
+}
+
+input CreateScoreInput {
+  championshipId: String!
+  driverId: String!
+  points: Float!
+}
+
+input DateFieldComparison {
+  between: DateFieldComparisonBetween
+  eq: DateTime
+  gt: DateTime
+  gte: DateTime
+  in: [DateTime!]
+  is: Boolean
+  isNot: Boolean
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+  notBetween: DateFieldComparisonBetween
+  notIn: [DateTime!]
+}
+
+input DateFieldComparisonBetween {
+  lower: DateTime!
+  upper: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DeleteManyChampionshipsInput {
+  """Filter to find records to delete"""
+  filter: ChampionshipDeleteFilter!
+}
+
+input DeleteManyDriversInput {
+  """Filter to find records to delete"""
+  filter: DriverDeleteFilter!
+}
+
+type DeleteManyResponse {
+  """The number of records deleted."""
+  deletedCount: Int!
+}
+
+input DeleteManyScoresInput {
+  """Filter to find records to delete"""
+  filter: ScoreDeleteFilter!
+}
+
+input DeleteOneChampionshipInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneDriverInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneScoreInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+type Driver {
+  createdAt: DateTime!
+  deletedAt: DateTime!
+  id: String!
+  name: String!
+  scores(
+    """Specify to filter the records returned."""
+    filter: ScoreFilter! = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging! = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [ScoreSort!]! = []
+  ): DriverScoresConnection
+  updatedAt: DateTime!
+}
+
+type DriverAggregateGroupBy {
+  createdAt: DateTime
+  deletedAt: DateTime
+  name: String
+  updatedAt: DateTime
+}
+
+type DriverConnection {
+  """Array of nodes."""
+  nodes: [Driver!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type DriverCountAggregate {
+  createdAt: Int
+  deletedAt: Int
+  name: Int
+  updatedAt: Int
+}
+
+input DriverDeleteFilter {
+  and: [DriverDeleteFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  name: StringFieldComparison
+  or: [DriverDeleteFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type DriverDeleteResponse {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: String
+  name: String
+  updatedAt: DateTime
+}
+
+input DriverFilter {
+  and: [DriverFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  name: StringFieldComparison
+  or: [DriverFilter!]
+  scores: DriverFilterScoreFilter
+  updatedAt: DateFieldComparison
+}
+
+input DriverFilterScoreFilter {
+  and: [DriverFilterScoreFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  or: [DriverFilterScoreFilter!]
+  points: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type DriverMaxAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  name: String
+  updatedAt: DateTime
+}
+
+type DriverMinAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  name: String
+  updatedAt: DateTime
+}
+
+type DriverScoresConnection {
+  """Array of nodes."""
+  nodes: [Score!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+input DriverSort {
+  direction: SortDirection!
+  field: DriverSortFields!
+  nulls: SortNulls
+}
+
+enum DriverSortFields {
+  createdAt
+  deletedAt
+  name
+  updatedAt
+}
+
+input DriverUpdateFilter {
+  and: [DriverUpdateFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  name: StringFieldComparison
+  or: [DriverUpdateFilter!]
+  updatedAt: DateFieldComparison
+}
+
+input IntFieldComparison {
+  between: IntFieldComparisonBetween
+  eq: Int
+  gt: Int
+  gte: Int
+  in: [Int!]
+  is: Boolean
+  isNot: Boolean
+  lt: Int
+  lte: Int
+  neq: Int
+  notBetween: IntFieldComparisonBetween
+  notIn: [Int!]
+}
+
+input IntFieldComparisonBetween {
+  lower: Int!
+  upper: Int!
+}
+
+type Mutation {
+  addScoresToChampionship(input: AddScoresToChampionshipInput!): Championship!
+  addScoresToDriver(input: AddScoresToDriverInput!): Driver!
+  createChampionship(data: CreateChampionshipInput!): Championship!
+  createDriver(data: CreateDriverInput!): Driver!
+  createManyChampionships(input: CreateManyChampionshipsInput!): [Championship!]!
+  createManyDrivers(input: CreateManyDriversInput!): [Driver!]!
+  createManyScores(input: CreateManyScoresInput!): [Score!]!
+  createOneChampionship(input: CreateOneChampionshipInput!): Championship!
+  createOneDriver(input: CreateOneDriverInput!): Driver!
+  createOneScore(input: CreateOneScoreInput!): Score!
+  createScore(data: CreateScoreInput!): Score!
+  deleteChampionship(id: String!): Boolean!
+  deleteDriver(id: String!): Boolean!
+  deleteManyChampionships(input: DeleteManyChampionshipsInput!): DeleteManyResponse!
+  deleteManyDrivers(input: DeleteManyDriversInput!): DeleteManyResponse!
+  deleteManyScores(input: DeleteManyScoresInput!): DeleteManyResponse!
+  deleteOneChampionship(input: DeleteOneChampionshipInput!): ChampionshipDeleteResponse!
+  deleteOneDriver(input: DeleteOneDriverInput!): DriverDeleteResponse!
+  deleteOneScore(input: DeleteOneScoreInput!): ScoreDeleteResponse!
+  deleteScore(id: String!): Boolean!
+  removeChampionshipFromScore(input: RemoveChampionshipFromScoreInput!): Score!
+  removeDriverFromScore(input: RemoveDriverFromScoreInput!): Score!
+  removeScoresFromChampionship(input: RemoveScoresFromChampionshipInput!): Championship!
+  removeScoresFromDriver(input: RemoveScoresFromDriverInput!): Driver!
+  setChampionshipOnScore(input: SetChampionshipOnScoreInput!): Score!
+  setDriverOnScore(input: SetDriverOnScoreInput!): Score!
+  setScoresOnChampionship(input: SetScoresOnChampionshipInput!): Championship!
+  setScoresOnDriver(input: SetScoresOnDriverInput!): Driver!
+  updateChampionship(data: UpdateChampionshipInput!, id: String!): Championship!
+  updateDriver(data: UpdateDriverInput!, id: String!): Driver!
+  updateManyChampionships(input: UpdateManyChampionshipsInput!): UpdateManyResponse!
+  updateManyDrivers(input: UpdateManyDriversInput!): UpdateManyResponse!
+  updateManyScores(input: UpdateManyScoresInput!): UpdateManyResponse!
+  updateOneChampionship(input: UpdateOneChampionshipInput!): Championship!
+  updateOneDriver(input: UpdateOneDriverInput!): Driver!
+  updateOneScore(input: UpdateOneScoreInput!): Score!
+  updateScore(data: UpdateScoreInput!, id: String!): Score!
+}
+
+type OffsetPageInfo {
+  """true if paging forward and there are more records."""
+  hasNextPage: Boolean
+
+  """true if paging backwards and there are more records."""
+  hasPreviousPage: Boolean
+}
+
+input OffsetPaging {
+  """Limit the number of records returned"""
+  limit: Int
+
+  """Offset to start returning records from"""
+  offset: Int
+}
+
+type Query {
+  allChampionships: [Championship!]!
+  allDrivers: [Driver!]!
+  allScores: [Score!]!
+  championship(
+    """The id of the record to find."""
+    id: ID!
+  ): Championship
+  championshipById(id: String!): Championship!
+  championships(
+    """Specify to filter the records returned."""
+    filter: ChampionshipFilter! = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging! = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [ChampionshipSort!]! = []
+  ): ChampionshipConnection!
+  driver(
+    """The id of the record to find."""
+    id: ID!
+  ): Driver
+  driverById(id: String!): Driver!
+  drivers(
+    """Specify to filter the records returned."""
+    filter: DriverFilter! = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging! = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [DriverSort!]! = []
+  ): DriverConnection!
+  score(
+    """The id of the record to find."""
+    id: ID!
+  ): Score
+  scoreById(id: String!): Score!
+  scores(
+    """Specify to filter the records returned."""
+    filter: ScoreFilter! = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging! = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [ScoreSort!]! = []
+  ): ScoreConnection!
+}
+
+input RemoveChampionshipFromScoreInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input RemoveDriverFromScoreInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input RemoveScoresFromChampionshipInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input RemoveScoresFromDriverInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+type Score {
+  championship: Championship!
+  createdAt: DateTime!
+  deletedAt: DateTime!
+  driver: Driver!
+  id: String!
+  points: Int!
+  updatedAt: DateTime!
+}
+
+type ScoreAggregateGroupBy {
+  createdAt: DateTime
+  deletedAt: DateTime
+  points: Int
+  updatedAt: DateTime
+}
+
+type ScoreAvgAggregate {
+  points: Float
+}
+
+type ScoreConnection {
+  """Array of nodes."""
+  nodes: [Score!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type ScoreCountAggregate {
+  createdAt: Int
+  deletedAt: Int
+  points: Int
+  updatedAt: Int
+}
+
+input ScoreDeleteFilter {
+  and: [ScoreDeleteFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  or: [ScoreDeleteFilter!]
+  points: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type ScoreDeleteResponse {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: String
+  points: Int
+  updatedAt: DateTime
+}
+
+input ScoreFilter {
+  and: [ScoreFilter!]
+  championship: ScoreFilterChampionshipFilter
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  driver: ScoreFilterDriverFilter
+  or: [ScoreFilter!]
+  points: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+input ScoreFilterChampionshipFilter {
+  and: [ScoreFilterChampionshipFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  name: StringFieldComparison
+  or: [ScoreFilterChampionshipFilter!]
+  rounds: IntFieldComparison
+  stage: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+input ScoreFilterDriverFilter {
+  and: [ScoreFilterDriverFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  name: StringFieldComparison
+  or: [ScoreFilterDriverFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type ScoreMaxAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  points: Int
+  updatedAt: DateTime
+}
+
+type ScoreMinAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  points: Int
+  updatedAt: DateTime
+}
+
+input ScoreSort {
+  direction: SortDirection!
+  field: ScoreSortFields!
+  nulls: SortNulls
+}
+
+enum ScoreSortFields {
+  createdAt
+  deletedAt
+  points
+  updatedAt
+}
+
+type ScoreSumAggregate {
+  points: Float
+}
+
+input ScoreUpdateFilter {
+  and: [ScoreUpdateFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  or: [ScoreUpdateFilter!]
+  points: IntFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+input SetChampionshipOnScoreInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input SetDriverOnScoreInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input SetScoresOnChampionshipInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input SetScoresOnDriverInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+"""Sort Directions"""
+enum SortDirection {
+  ASC
+  DESC
+}
+
+"""Sort Nulls Options"""
+enum SortNulls {
+  NULLS_FIRST
+  NULLS_LAST
+}
+
+input StringFieldComparison {
+  eq: String
+  gt: String
+  gte: String
+  iLike: String
+  in: [String!]
+  is: Boolean
+  isNot: Boolean
+  like: String
+  lt: String
+  lte: String
+  neq: String
+  notILike: String
+  notIn: [String!]
+  notLike: String
+}
+
+input UpdateChampionshipInput {
+  id: ID
+  name: String
+  rounds: Float
+  stage: Float
+}
+
+input UpdateDriverInput {
+  id: ID
+  name: String
+}
+
+input UpdateManyChampionshipsInput {
+  """Filter used to find fields to update"""
+  filter: ChampionshipUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateChampionshipInput!
+}
+
+input UpdateManyDriversInput {
+  """Filter used to find fields to update"""
+  filter: DriverUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateDriverInput!
+}
+
+type UpdateManyResponse {
+  """The number of records updated."""
+  updatedCount: Int!
+}
+
+input UpdateManyScoresInput {
+  """Filter used to find fields to update"""
+  filter: ScoreUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateScoreInput!
+}
+
+input UpdateOneChampionshipInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateChampionshipInput!
+}
+
+input UpdateOneDriverInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateDriverInput!
+}
+
+input UpdateOneScoreInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateScoreInput!
+}
+
+input UpdateScoreInput {
+  championshipId: String
+  driverId: String
+  id: ID
+  points: Float
+}

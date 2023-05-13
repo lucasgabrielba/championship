@@ -4,24 +4,23 @@ import {
 } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 import { Module } from '@nestjs/common';
-import { ScoreDTO } from '../../DTO/Score/score.dto';
-import { ORMScore } from '../../../infra/entities/ORMScore';
+import { ScoreDTO } from '../../../entities/Score/score.dto';
+import { Score } from '../../../infra/database/entities/ORMScore';
 import {
   CreateScoreInput,
   UpdateScoreInput,
-} from '../../DTO/Score/score.input';
+} from '../../../entities/Score/score.input';
 import { ScoreResolver } from './score.resolver';
 import { ScoreService } from './score.service';
-import { ScoreApplicationService } from '../../../championship/aplication/service/ScoreApplicationService';
 
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({
-      imports: [NestjsQueryTypeOrmModule.forFeature([ORMScore])],
+      imports: [NestjsQueryTypeOrmModule.forFeature([Score])],
       resolvers: [
         {
           DTOClass: ScoreDTO,
-          EntityClass: ORMScore,
+          EntityClass: Score,
           CreateDTOClass: CreateScoreInput,
           UpdateDTOClass: UpdateScoreInput,
           enableTotalCount: true,
@@ -30,6 +29,6 @@ import { ScoreApplicationService } from '../../../championship/aplication/servic
       ],
     }),
   ],
-  providers: [ScoreService, ScoreResolver, ScoreApplicationService],
+  providers: [ScoreService, ScoreResolver],
 })
 export class ScoreModule {}

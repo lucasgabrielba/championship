@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ScoreService } from './score.service';
-import { ScoreDTO } from '../../DTO/Score/score.dto';
+import { ScoreDTO } from '../../../entities/Score/score.dto';
 import {
   CreateScoreInput,
   UpdateScoreInput,
-} from '../../DTO/Score/score.input';
-import { Score } from '../../../championship/domain/entities';
+} from '../../../entities/Score/score.input';
+import { Score } from '../../../infra/database/entities/ORMScore';
 
 @Resolver()
 export class ScoreResolver {
@@ -27,7 +27,7 @@ export class ScoreResolver {
 
   @Mutation(() => ScoreDTO)
   async createScore(@Args('data') data: CreateScoreInput): Promise<Score> {
-    const result = await this.service.create(data);
+    const result = await this.service.createAndSave(data);
 
     return result;
   }
@@ -37,7 +37,7 @@ export class ScoreResolver {
     @Args('id') id: string,
     @Args('data') data: UpdateScoreInput,
   ): Promise<Score> {
-    const result = await this.service.update(id, data);
+    const result = await this.service.updateAndSave(id, data);
 
     return result;
   }

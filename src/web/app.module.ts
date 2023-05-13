@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ChampionshipsModule } from './championship/championships/championships.module';
-import { RunnersModule } from './championship/runners/runners.module';
+import { DriversModule } from './championship/drivers/driver.module';
 import { ScoreModule } from './championship/scores/score.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '../infra/database/database.module';
@@ -18,7 +18,7 @@ import { DatabaseModule } from '../infra/database/database.module';
     ConfigModule.forRoot(),
     DatabaseModule,
     ChampionshipsModule,
-    RunnersModule,
+    DriversModule,
     ScoreModule,
   ],
 })
