@@ -5,13 +5,19 @@ import { ChampionshipDTO } from '../../DTO/ChampionshipDTO.js';
 import {
   Auditable,
   AuditableProps,
-} from '../../../../kernel/core/entity/Auditable.js';
+} from '../../../../kernel/domain/entity/Auditable.js';
 
-export interface CreateChampionshipProps {
+export interface CreateChampionshipPropsPrimitive {
   name: string;
   rounds: number;
   stage: number;
 }
+
+export interface UpdateChampionshipPropsPrimitive
+  extends Partial<CreateChampionshipPropsPrimitive> {}
+
+export interface CreateChampionshipProps
+  extends CreateChampionshipPropsPrimitive {}
 
 export interface ChampionshipProps
   extends CreateChampionshipProps,
@@ -21,6 +27,8 @@ export class Championship extends Auditable {
   constructor(protected props: ChampionshipProps) {
     super(props);
   }
+
+  public static readonly LABEL: string = 'Championship';
 
   get name(): string {
     return this.props.name;

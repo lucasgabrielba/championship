@@ -4,12 +4,21 @@ import Joi from 'joi';
 import {
   Auditable,
   AuditableProps,
-} from '../../../../kernel/core/entity/Auditable.js';
+} from '../../../../kernel/domain/entity/Auditable.js';
 import { Championship } from './Championship.js';
 import { Driver } from './Driver.js';
 import { ScoreDTO } from '../../DTO/ScoreDTO.js';
 
-export interface CreateScoreProps extends AuditableProps {
+export interface CreateScorePropsPrimitive {
+  championshipId: string;
+  driverId: string;
+  score: number;
+}
+
+export interface UpdateScorePropsPrimitive
+  extends Partial<CreateScorePropsPrimitive> {}
+
+export interface CreateScoreProps {
   championship: Championship;
   driver: Driver;
   score: number;
@@ -21,6 +30,8 @@ export class Score extends Auditable {
   constructor(protected props: ScoreProps) {
     super(props);
   }
+
+  public static readonly LABEL: string = 'Score';
 
   get championship(): Championship {
     return this.props.championship;

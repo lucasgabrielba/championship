@@ -8,3 +8,10 @@ export interface ScoreDTO extends AuditableDTO {
   driver: DriverDTO;
   score: number;
 }
+
+export interface ScoreDTOPrimitive extends AuditableDTO {
+  id: string;
+  championshipId: string;
+  driverId: string;
+  score: number;
+}

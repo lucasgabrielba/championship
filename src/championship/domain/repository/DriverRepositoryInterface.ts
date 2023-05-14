@@ -1,16 +1,6 @@
-import { ORMDriver } from '../../../infra/database/entities/ORMDriver';
-import { CreateDriverDTO, UpdateDriverDTO } from '../../DTO/DriverDTO';
+import { RepositoryInterface } from '../../../../kernel/domain/repository/RepositoryInterface';
+import { DriverFilter } from '../../filters/DriverFilter';
+import { Driver } from '../entities/Driver';
 
-export interface DriverRrepositoryInterface {
-  getById(id: string): Promise<ORMDriver>;
-
-  getAll(): Promise<ORMDriver[]>;
-
-  filter(): Promise<ORMDriver>;
-
-  create(data: CreateDriverDTO): Promise<ORMDriver>;
-
-  update(data: UpdateDriverDTO): Promise<ORMDriver>;
-
-  delete(id: string): Promise<boolean>;
-}
+export interface DriverRepositoryInterface
+  extends RepositoryInterface<Driver, DriverFilter> {}

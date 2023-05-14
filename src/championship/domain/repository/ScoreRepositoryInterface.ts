@@ -1,16 +1,6 @@
-import { ORMScore } from '../../../infra/database/entities/ORMScore';
-import { CreateScoreDTO, UpdateScoreDTO } from '../../DTO/ScoreDTO';
+import { RepositoryInterface } from '../../../../kernel/domain/repository/RepositoryInterface';
+import { ScoreFilter } from '../../filters/ScoreFilter';
+import { Score } from '../entities/Score';
 
-export interface ScoreRrepositoryInterface {
-  getById(id: string): Promise<ORMScore>;
-
-  getAll(): Promise<ORMScore[]>;
-
-  filter(): Promise<ORMScore>;
-
-  create(data: CreateScoreDTO): Promise<ORMScore>;
-
-  update(data: UpdateScoreDTO): Promise<ORMScore>;
-
-  delete(id: string): Promise<boolean>;
-}
+export interface ScoreRepositoryInterface
+  extends RepositoryInterface<Score, ScoreFilter> {}

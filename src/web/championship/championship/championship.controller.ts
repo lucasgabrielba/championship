@@ -7,37 +7,45 @@ import {
   Body,
   Param,
 } from '@nestjs/common';
-import { Championship } from '../../../championship/domain/entities/Championship';
+import {
+  Championship,
+  CreateChampionshipPropsPrimitive,
+  UpdateChampionshipPropsPrimitive,
+} from '../../../championship/domain/entities/Championship';
+import { ChampionshipService } from './championship.service';
+import { Result } from '../../../../kernel/Result/Result';
 
 @Controller('championship')
 export class ChampionshipController {
   constructor(private readonly service: ChampionshipService) {}
 
   @Get()
-  async findAll(): Promise<Championship[]> {
-    return this.service.findAll();
+  async findAll(): Promise<Result<Championship[]>> {
+    return await this.service.listAllChampionship();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Championship> {
-    return this.service.findOne(id);
+  async findOne(@Param('id') id: string): Promise<Result<Championship>> {
+    return await this.service.findOne(id);
   }
 
   @Post()
-  async create(@Body() championshipData: Championship): Promise<Championship> {
-    return this.service.create(championshipData);
+  async create(
+    @Body() data: CreateChampionshipPropsPrimitive,
+  ): Promise<Result<Championship>> {
+    return await this.service.create(data);
   }
 
   @Put(':id')
   async update(
-    @Param('id') id: number,
-    @Body() championshipData: Championship,
-  ): Promise<void> {
-    await this.service.update(id, championshipData);
+    @Param('id') id: string,
+    @Body() data: UpdateChampionshipPropsPrimitive,
+  ): Promise<Result<Championship>> {
+    return await this.service.update(id, data);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
-    await this.championshipService.delete(id);
+  async delete(@Param('id') id: string): Promise<Result<boolean>> {
+    return await this.service.remove(id);
   }
 }

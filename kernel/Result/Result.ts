@@ -4,7 +4,7 @@ export class Result<T> {
     public readonly error: Error | null = null,
   ) {}
 
-  static ok<T>(data: T): Result<T> {
+  static ok<T>(data?: T): Result<T> {
     return new Result(data, null);
   }
 

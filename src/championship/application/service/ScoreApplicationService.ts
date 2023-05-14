@@ -1,60 +1,58 @@
-import { ORMScore } from '../../../infra/database/entities/ORMScore';
-import { CreateScoreDTO, UpdateScoreDTO } from '../../DTO/ScoreDTO';
-import { NotFoundException } from '@nestjs/common';
-import { ScoreCoreService } from '../../domain/CoreService/ScoreCoreService';
+import { Result } from '../../../../kernel/Result/Result';
+import { AbstractApplicationService } from '../../../../kernel/application/service/AbstactApplicationService';
+import { isUUID } from '../../../../kernel/isUUID/isUUID';
+import { ScoreDTOPrimitive } from '../../DTO/ScoreDTO';
+import { ScoreDomainService } from '../../domain/domainService/ScoreDomainService';
+import { Score, CreateScorePropsPrimitive } from '../../domain/entities/Score';
+import { ScoreFilter } from '../../filters/ScoreFilter';
 
-export class ScoreApplicationService {
-  constructor(protected service: ScoreCoreService) {
-    this.service = service;
+export class ScoreApplicationService extends AbstractApplicationService<
+  Score,
+  ScoreDTOPrimitive,
+  CreateScorePropsPrimitive,
+  ScoreFilter,
+  ScoreDomainService
+> {
+  constructor(readonly manager: ScoreDomainService) {
+    super(manager);
   }
 
-  async getById(id: string): Promise<ORMScore | NotFoundException> {
-    const result = await this.service.getById(id);
-    if (!result) {
-      return new NotFoundException('Score not found');
+  async getById(id: string): Promise<Result<Score>> {
+    const isValid = isUUID(id);
+
+    if (!isValid) {
+      return Result.fail(new Error('O id fornecido não é válido.'));
     }
 
-    return result;
-  }
-
-  async getAll(): Promise<ORMScore[]> {
-    const result = await this.service.getAll();
-
-    return result;
-  }
-
-  async filter(): Promise<ORMScore | NotFoundException> {
-    const result = await this.service.filter();
-    if (!result) {
-      return new NotFoundException('Score not found');
+    const retrieved = await this.manager.get(id);
+    if (retrieved.isFailure) {
+      return Result.fail(
+        new Error(`Não foi possível resgatar "${this.getModelLabel()}".`),
+      );
     }
 
-    return result;
+    return Result.ok<Score>(retrieved.data);
   }
 
-  async create(data: CreateScoreDTO): Promise<ORMScore | NotFoundException> {
-    const result = await this.service.create(data);
+  async all(options?: ScoreFilter): Promise<Result<Score[]>> {
+    return this.filter(options as any);
+  }
 
-    if (!result) {
-      return new NotFoundException('Score not found');
+  async filter(options: ScoreFilter): Promise<Result<Score[]>> {
+    const fetched = await this.manager.filter(options);
+
+    if (fetched.isFailure) {
+      return Result.fail(
+        new Error(
+          `Não foi possível resgatar registros de "${this.getModelLabel()}".`,
+        ),
+      );
     }
 
-    return result;
+    return Result.ok<Score[]>(fetched.data);
   }
 
-  async update(data: UpdateScoreDTO): Promise<ORMScore | NotFoundException> {
-    const result = await this.service.update(data);
-
-    if (!result) {
-      return new NotFoundException('Score not found');
-    }
-
-    return result;
-  }
-
-  async delete(id: string): Promise<boolean> {
-    const result = await this.service.delete(id);
-
-    return result;
+  getModelLabel(): string {
+    return Score.LABEL;
   }
 }

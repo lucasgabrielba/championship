@@ -6,3 +6,5 @@ export interface ChampionshipDTO extends AuditableDTO {
   rounds: number;
   stage: number;
 }
+
+export interface ChampionshipDTOPrimitive extends ChampionshipDTO {}

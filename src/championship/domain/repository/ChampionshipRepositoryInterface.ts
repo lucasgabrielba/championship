@@ -1,19 +1,6 @@
-import { ORMChampionship } from '../../../infra/database/entities/ORMChampionship';
-import {
-  CreateChampionshipDTO,
-  UpdateChampionshipDTO,
-} from '../../DTO/ChampionshipDTO';
+import { RepositoryInterface } from '../../../../kernel/domain/repository/RepositoryInterface';
+import { ChampionshipFilter } from '../../filters/ChampionshipFilter';
+import { Championship } from '../entities/Championship';
 
-export interface ChampionshipRrepositoryInterface {
-  getById(id: string): Promise<ORMChampionship>;
-
-  getAll(): Promise<ORMChampionship[]>;
-
-  filter(): Promise<ORMChampionship>;
-
-  create(data: CreateChampionshipDTO): Promise<ORMChampionship>;
-
-  update(data: UpdateChampionshipDTO): Promise<ORMChampionship>;
-
-  delete(id: string): Promise<boolean>;
-}
+export interface ChampionshipRepositoryInterface
+  extends RepositoryInterface<Championship, ChampionshipFilter> {}

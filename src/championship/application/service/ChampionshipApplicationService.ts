@@ -1,67 +1,61 @@
+import { Result } from '../../../../kernel/Result/Result';
+import { AbstractApplicationService } from '../../../../kernel/application/service/AbstactApplicationService';
+import { isUUID } from '../../../../kernel/isUUID/isUUID';
+import { ChampionshipDTOPrimitive } from '../../DTO/ChampionshipDTO';
+import { ChampionshipDomainService } from '../../domain/domainService/ChampionshipDomainService';
 import {
-  CreateChampionshipDTO,
-  UpdateChampionshipDTO,
-} from '../../DTO/ChampionshipDTO';
-import { NotFoundException } from '@nestjs/common';
-import { ChampionshipCoreService } from '../../domain/CoreService/ChampionshipCoreService';
-import { Championship } from '../../domain/entities/Championship';
+  Championship,
+  CreateChampionshipPropsPrimitive,
+} from '../../domain/entities/Championship';
+import { ChampionshipFilter } from '../../filters/ChampionshipFilter';
 
-export class ChampionshipApplicationService {
-  constructor(protected service: ChampionshipCoreService) {
-    this.service = service;
+export class ChampionshipApplicationService extends AbstractApplicationService<
+  Championship,
+  ChampionshipDTOPrimitive,
+  CreateChampionshipPropsPrimitive,
+  ChampionshipFilter,
+  ChampionshipDomainService
+> {
+  constructor(readonly manager: ChampionshipDomainService) {
+    super(manager);
   }
 
-  async getById(id: string): Promise<Championship | NotFoundException> {
-    const result = await this.service.getById(id);
-    if (!result) {
-      return new NotFoundException('Championship not found');
+  async getById(id: string): Promise<Result<Championship>> {
+    const isValid = isUUID(id);
+
+    if (!isValid) {
+      return Result.fail(new Error('O id fornecido não é válido.'));
     }
 
-    return result;
-  }
-
-  async getAll(): Promise<Championship[]> {
-    const result = await this.service.getAll();
-
-    return result;
-  }
-
-  async filter(): Promise<Championship | NotFoundException> {
-    const result = await this.service.filter();
-    if (!result) {
-      return new NotFoundException('Championship not found');
+    const retrieved = await this.manager.get(id);
+    if (retrieved.isFailure) {
+      return Result.fail(
+        new Error(`Não foi possível resgatar "${this.getModelLabel()}".`),
+      );
     }
 
-    return result;
+    return Result.ok<Championship>(retrieved.data);
   }
 
-  async create(
-    data: CreateChampionshipDTO,
-  ): Promise<Championship | NotFoundException> {
-    const result = await this.service.create(data);
+  async all(options?: ChampionshipFilter): Promise<Result<Championship[]>> {
+    return this.filter(options as any);
+  }
 
-    if (!result) {
-      return new NotFoundException('Championship not found');
+  async filter(options: ChampionshipFilter): Promise<Result<Championship[]>> {
+    const fetched = await this.manager.filter(options);
+
+    if (fetched.isFailure) {
+      return Result.fail(
+        new Error(
+          `Não foi possível resgatar registros de "${this.getModelLabel()}".`,
+        ),
+      );
     }
 
-    return result;
+    return Result.ok<Championship[]>(fetched.data);
   }
 
-  async update(
-    data: UpdateChampionshipDTO,
-  ): Promise<Championship | NotFoundException> {
-    const result = await this.service.update(data);
-
-    if (!result) {
-      return new NotFoundException('Championship not found');
-    }
-
-    return result;
-  }
-
-  async delete(id: string): Promise<boolean> {
-    const result = await this.service.delete(id);
-
-    return result;
+  getModelLabel(): string {
+    return Championship.LABEL;
   }
 }

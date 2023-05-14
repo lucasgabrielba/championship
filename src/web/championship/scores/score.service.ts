@@ -1,123 +1,57 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Score } from '../../../infra/database/entities/ORMScore';
+import { Injectable } from '@nestjs/common';
 import {
-  CreateScoreInput,
-  UpdateScoreInput,
-} from '../../../entities/Score/score.input';
-import { ScoreFilters } from '../../../entities/Score/score.filter';
+  CreateScorePropsPrimitive,
+  Score,
+  UpdateScorePropsPrimitive,
+} from '../../../championship/domain/entities/Score';
+import { ScoreApplicationService } from '../../../championship/application/service/ScoreApplicationService';
+import { Result } from '../../../../kernel/Result/Result';
+import { ScoreDTOPrimitive } from '../../../championship/DTO/ScoreDTO';
+import { ScoreEntrypoint } from 'entrypoint/score.entrypoint';
 
 @Injectable()
 export class ScoreService {
-  constructor(
-    @InjectRepository(Score)
-    private repository: Repository<Score>,
-  ) {}
+  protected applicationService: ScoreApplicationService;
 
-  async findAll(): Promise<Score[]> {
-    const result = await this.repository.find();
+  constructor(entrypoint: ScoreEntrypoint) {
+    this.applicationService = entrypoint.getApplicationService();
+  }
 
-    if (!result) {
-      throw new NotFoundException('Error fetching all championship');
-    }
-
+  async listAllScore(): Promise<Result<Score[]>> {
+    const result = await this.applicationService.all();
     return result;
   }
 
-  async filter(filter: ScoreFilters): Promise<Score> {
-    let result;
-
-    if (filter.id) {
-      result = await this.repository.findOne({
-        where: { id: filter.id },
-      });
-    }
-
-    if (filter.championshipId) {
-      result = await this.repository.findOne({
-        where: { championshipId: filter.championshipId },
-      });
-    }
-
-    if (filter.driverId) {
-      result = await this.repository.findOne({
-        where: { driverId: filter.driverId },
-      });
-    }
-
-    if (filter.points) {
-      result = await this.repository.findOne({
-        where: { points: filter.points },
-      });
-    }
-
-    if (!result) {
-      throw new NotFoundException(`Error fetching score.`);
-    }
-
-    return result;
+  async findOne(id: string): Promise<Result<Score>> {
+    return await this.applicationService.getById(id);
   }
 
-  async findById(id: string): Promise<Score> {
-    const result = await this.repository.findOne({
-      where: { id: id },
-    });
-
-    if (!result) {
-      throw new NotFoundException(`Error fetching id Championship: ${id}.`);
-    }
-
-    return result;
+  async create(data: CreateScorePropsPrimitive): Promise<Result<Score>> {
+    return await this.applicationService.create(data);
   }
 
-  async createAndSave(data: CreateScoreInput): Promise<Score> {
-    const created = this.repository.create(data);
-    const saved = await this.repository.save(created);
+  async update(
+    id: string,
+    data: UpdateScorePropsPrimitive,
+  ): Promise<Result<Score>> {
+    const entity = await this.applicationService.getById(id);
 
-    if (!saved) {
-      throw new NotFoundException('Error creating championship.');
+    if (entity.isFailure) {
+      return Result.fail(new Error(entity.error.toString()));
     }
 
-    return saved;
-  }
-
-  async updateAndSave(id: string, data: UpdateScoreInput): Promise<Score> {
-    const championship = await this.findById(id);
-
-    if (!championship) {
-      throw new NotFoundException(
-        'It was not possible to make the update, championship not found.',
-      );
-    }
-
-    await this.repository.update(championship, { ...data });
-    const created = this.repository.create({
-      ...championship,
+    const scoreData = entity.data.toDTO();
+    const scoreDTO: ScoreDTOPrimitive = {
+      ...scoreData,
       ...data,
-    });
-    const saved = this.repository.save(created);
+      championshipId: data.championshipId ?? scoreData.championship.id,
+      driverId: data.driverId ?? scoreData.driver.id,
+    };
 
-    if (!saved) {
-      throw new NotFoundException('Error updating championship.');
-    }
-
-    return saved;
+    return await this.applicationService.update(scoreDTO);
   }
 
-  async delete(id: string): Promise<boolean> {
-    const championship = await this.findById(id);
-
-    if (!championship) {
-      throw new NotFoundException(`Error fetching id championship: ${id}.`);
-    }
-
-    const deleted = await this.repository.softDelete(id);
-
-    if (deleted) {
-      return true;
-    }
-
-    return false;
+  async remove(id: string): Promise<Result<boolean>> {
+    return await this.applicationService.remove(id);
   }
 }

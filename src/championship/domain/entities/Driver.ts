@@ -5,11 +5,16 @@ import Joi from 'joi';
 import {
   Auditable,
   AuditableProps,
-} from '../../../../kernel/core/entity/Auditable.js';
+} from '../../../../kernel/domain/entity/Auditable.js';
 
-export interface CreateDriverProps extends AuditableProps {
+export interface CreateDriverPropsPrimitive {
   name: string;
 }
+
+export interface UpdateDriverPropsPrimitive
+  extends Partial<CreateDriverPropsPrimitive> {}
+
+export interface CreateDriverProps extends CreateDriverPropsPrimitive {}
 
 export interface DriverProps extends CreateDriverProps, AuditableProps {}
 
@@ -17,6 +22,8 @@ export class Driver extends Auditable {
   constructor(protected props: DriverProps) {
     super(props);
   }
+
+  public static readonly LABEL: string = 'Driver';
 
   get name(): string {
     return this.props.name;

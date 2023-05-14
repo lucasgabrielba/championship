@@ -1,60 +1,61 @@
-import { ORMDriver } from '../../../infra/database/entities/ORMDriver';
-import { CreateDriverDTO, UpdateDriverDTO } from '../../DTO/DriverDTO';
-import { NotFoundException } from '@nestjs/common';
-import { DriverCoreService } from '../../domain/CoreService/DriverCoreService';
+import { Result } from '../../../../kernel/Result/Result';
+import { AbstractApplicationService } from '../../../../kernel/application/service/AbstactApplicationService';
+import { isUUID } from '../../../../kernel/isUUID/isUUID';
+import { DriverDTOPrimitive } from '../../DTO/DriverDTO';
+import { DriverDomainService } from '../../domain/domainService/DriverDomainService';
+import {
+  Driver,
+  CreateDriverPropsPrimitive,
+} from '../../domain/entities/Driver';
+import { DriverFilter } from '../../filters/DriverFilter';
 
-export class DriverApplicationService {
-  constructor(protected service: DriverCoreService) {
-    this.service = service;
+export class DriverApplicationService extends AbstractApplicationService<
+  Driver,
+  DriverDTOPrimitive,
+  CreateDriverPropsPrimitive,
+  DriverFilter,
+  DriverDomainService
+> {
+  constructor(readonly manager: DriverDomainService) {
+    super(manager);
   }
 
-  async getById(id: string): Promise<ORMDriver | NotFoundException> {
-    const result = await this.service.getById(id);
-    if (!result) {
-      return new NotFoundException('Driver not found');
+  async getById(id: string): Promise<Result<Driver>> {
+    const isValid = isUUID(id);
+
+    if (!isValid) {
+      return Result.fail(new Error('O id fornecido não é válido.'));
     }
 
-    return result;
-  }
-
-  async getAll(): Promise<ORMDriver[]> {
-    const result = await this.service.getAll();
-
-    return result;
-  }
-
-  async filter(): Promise<ORMDriver | NotFoundException> {
-    const result = await this.service.filter();
-    if (!result) {
-      return new NotFoundException('Driver not found');
+    const retrieved = await this.manager.get(id);
+    if (retrieved.isFailure) {
+      return Result.fail(
+        new Error(`Não foi possível resgatar "${this.getModelLabel()}".`),
+      );
     }
 
-    return result;
+    return Result.ok(retrieved.data);
   }
 
-  async create(data: CreateDriverDTO): Promise<ORMDriver | NotFoundException> {
-    const result = await this.service.create(data);
+  async all(options?: DriverFilter): Promise<Result<Driver[]>> {
+    return this.filter(options as any);
+  }
 
-    if (!result) {
-      return new NotFoundException('Driver not found');
+  async filter(options: DriverFilter): Promise<Result<Driver[]>> {
+    const fetched = await this.manager.filter(options);
+
+    if (fetched.isFailure) {
+      return Result.fail(
+        new Error(
+          `Não foi possível resgatar registros de "${this.getModelLabel()}".`,
+        ),
+      );
     }
 
-    return result;
+    return Result.ok(fetched.data);
   }
 
-  async update(data: UpdateDriverDTO): Promise<ORMDriver | NotFoundException> {
-    const result = await this.service.update(data);
-
-    if (!result) {
-      return new NotFoundException('Driver not found');
-    }
-
-    return result;
-  }
-
-  async delete(id: string): Promise<boolean> {
-    const result = await this.service.delete(id);
-
-    return result;
+  getModelLabel(): string {
+    return Driver.LABEL;
   }
 }
