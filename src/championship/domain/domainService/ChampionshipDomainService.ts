@@ -22,7 +22,7 @@ export class ChampionshipDomainService extends AbstractDomainService<
   async create(data: CreateChampionshipProps): Promise<Result<Championship>> {
     const created = Championship.create(data);
 
-    if (created.isFailure) {
+    if (created.isFailure()) {
       return Result.fail(created.error);
     }
 
@@ -32,7 +32,7 @@ export class ChampionshipDomainService extends AbstractDomainService<
   async update(data: ChampionshipDTO): Promise<Result<Championship>> {
     const built = await this.build(data);
 
-    if (built.isFailure) {
+    if (built.isFailure()) {
       return Result.fail(
         new Error(
           `Não foi possível construir ${Championship.LABEL} a partir dos dados informados.`,
@@ -43,7 +43,7 @@ export class ChampionshipDomainService extends AbstractDomainService<
     const instance = built.data;
     const saved = await this.save(instance);
 
-    if (saved.isFailure) {
+    if (saved.isFailure()) {
       return Result.fail(
         new Error(`Não foi possível salvar ${Championship.LABEL}".`),
       );
@@ -55,7 +55,7 @@ export class ChampionshipDomainService extends AbstractDomainService<
   async build(data: ChampionshipDTO): Promise<Result<Championship>> {
     const created = Championship.reconstitute(data);
 
-    if (created.isFailure) {
+    if (created.isFailure()) {
       return Result.fail(created.error);
     }
 

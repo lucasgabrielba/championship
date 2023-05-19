@@ -1,4 +1,4 @@
-import { Driver } from '../domain/entities/driver';
+import { Driver } from '../domain/entities/Driver';
 
 export interface DriverFilter {
   where?: {

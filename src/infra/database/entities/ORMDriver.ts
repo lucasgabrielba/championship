@@ -3,8 +3,10 @@ import { ORMScore } from './ORMScore';
 import { ORMBase } from './utils/ORMBase';
 import { Driver } from '../../../championship/domain/entities/Driver';
 import { DriverDTO } from '../../../championship/DTO/DriverDTO';
+import { Injectable } from '@nestjs/common';
 
-@Entity()
+@Injectable()
+@Entity('Driver')
 export class ORMDriver extends ORMBase {
   @Column()
   name: string;

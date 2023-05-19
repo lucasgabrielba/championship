@@ -1,7 +1,7 @@
-import { uuid } from 'uuidv4';
+import { v4 } from 'uuid';
+import * as Joi from 'joi';
 import { Result } from '../../../../kernel/Result/Result.js';
 import { DriverDTO } from '../../DTO/DriverDTO.js';
-import Joi from 'joi';
 import {
   Auditable,
   AuditableProps,
@@ -31,14 +31,14 @@ export class Driver extends Auditable {
 
   static create(props: CreateDriverProps): Result<Driver> {
     const validated = Driver.validate({
-      id: uuid(),
+      id: v4(),
       name: props.name,
       createdAt: new Date(),
       updatedAt: undefined,
       deletedAt: undefined,
     });
 
-    if (validated.isFailure) {
+    if (validated.isFailure()) {
       return Result.fail(validated.error);
     }
 
@@ -48,13 +48,13 @@ export class Driver extends Auditable {
   static reconstitute(props: DriverDTO): Result<Driver> {
     const validated = Driver.validate({
       ...props,
-      id: uuid(),
+      id: props.id ?? v4(),
       createdAt: props.createdAt ? new Date(props.createdAt) : undefined,
       updatedAt: props.updatedAt ? new Date(props.updatedAt) : undefined,
       deletedAt: props.deletedAt ? new Date(props.deletedAt) : undefined,
     });
 
-    if (validated.isFailure) {
+    if (validated.isFailure()) {
       return Result.fail(validated.error);
     }
 

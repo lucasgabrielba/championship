@@ -1,6 +1,6 @@
-import { uuid } from 'uuidv4';
+import { v4 } from 'uuid';
+import * as Joi from 'joi';
 import { Result } from '../../../../kernel/Result/Result.js';
-import Joi from 'joi';
 import {
   Auditable,
   AuditableProps,
@@ -47,7 +47,7 @@ export class Score extends Auditable {
 
   static create(props: CreateScoreProps): Result<Score> {
     const validated = Score.validate({
-      id: uuid(),
+      id: v4(),
       championship: props.championship,
       driver: props.driver,
       score: props.score,
@@ -56,7 +56,7 @@ export class Score extends Auditable {
       deletedAt: undefined,
     });
 
-    if (validated.isFailure) {
+    if (validated.isFailure()) {
       return Result.fail(validated.error);
     }
 
@@ -66,7 +66,7 @@ export class Score extends Auditable {
   static reconstitute(props: ScoreDTO): Result<Score> {
     const validated = Score.validate({
       ...props,
-      id: uuid(),
+      id: props.id ?? v4(),
       championship: Championship.reconstitute(props.championship).data,
       driver: Driver.reconstitute(props.driver).data,
       score: props.score,
@@ -75,7 +75,7 @@ export class Score extends Auditable {
       deletedAt: props.deletedAt ? new Date(props.deletedAt) : undefined,
     });
 
-    if (validated.isFailure) {
+    if (validated.isFailure()) {
       return Result.fail(validated.error);
     }
 

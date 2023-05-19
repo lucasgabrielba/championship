@@ -8,7 +8,7 @@ export abstract class AbstractApplicationService<
   FilterOptions,
   DomainServiceInterface,
 > implements
-    ApplicationServiceInterface<Model, DTO, CreateProps, FilterOptions>
+  ApplicationServiceInterface<Model, DTO, CreateProps, FilterOptions>
 {
   constructor(readonly manager: DomainServiceInterface) {}
 
@@ -21,7 +21,7 @@ export abstract class AbstractApplicationService<
   async filter(options?: FilterOptions): Promise<Result<Model[]>> {
     const fetched = await (this.manager as any).filter(options);
 
-    if (fetched.isFailure) {
+    if (fetched.isFailure()) {
       return Result.fail(
         new Error(
           `Não foi possível resgatar registros de "${this.getModelLabel()}".`,
@@ -34,7 +34,7 @@ export abstract class AbstractApplicationService<
 
   async getById(id: string): Promise<Result<Model>> {
     const retrieved = await (this.manager as any).get(id);
-    if (retrieved.isFailure) {
+    if (retrieved.isFailure()) {
       return Result.fail(
         new Error(`Não foi possível resgatar "${this.getModelLabel()}".`),
       );
@@ -46,7 +46,7 @@ export abstract class AbstractApplicationService<
   async get(filters: FilterOptions): Promise<Result<Model>> {
     const fetched = await (this.manager as any).getOne({ filters } as any);
 
-    if (fetched.isFailure) {
+    if (fetched.isFailure()) {
       return Result.fail(
         new Error(`Não foi possível resgatar "${this.getModelLabel()}".`),
       );
@@ -58,7 +58,7 @@ export abstract class AbstractApplicationService<
   async create(data: CreateProps): Promise<Result<Model>> {
     const created = await (this.manager as any).createAndSave(data);
 
-    if (created.isFailure) {
+    if (created.isFailure()) {
       return Result.fail(
         new Error(`Não foi possível criar "${this.getModelLabel()}".`),
       );
@@ -70,11 +70,11 @@ export abstract class AbstractApplicationService<
   async update(data: DTO): Promise<Result<Model>> {
     const built = await (this.manager as any).build(data);
 
-    if (built.isFailure) {
+    if (built.isFailure()) {
       return Result.fail(
         new Error(
           `Não foi possível construir "${this.getModelLabel()}"` +
-            ' a partir dos dados informados.',
+          ' a partir dos dados informados.',
         ),
       );
     }
@@ -82,7 +82,7 @@ export abstract class AbstractApplicationService<
     const instance = built.data;
     const saved = await (this.manager as any).save(instance);
 
-    if (saved.isFailure) {
+    if (saved.isFailure()) {
       return Result.fail(
         new Error(`Não foi possível salvar "${this.getModelLabel()}".`),
       );
@@ -94,15 +94,15 @@ export abstract class AbstractApplicationService<
   async remove(id: string): Promise<Result<boolean>> {
     const retrieved = await this.getById(id);
 
-    if (retrieved.isFailure) {
+    if (retrieved.isFailure()) {
       return Result.fail(retrieved.error);
     }
 
-    const instance = retrieved.error;
+    const instance = retrieved.data;
 
     const removed = await (this.manager as any).remove(instance);
 
-    if (removed.isFailure) {
+    if (removed.isFailure()) {
       return Result.fail(
         new Error(`Não foi possível remover "${this.getModelLabel()}".`),
       );

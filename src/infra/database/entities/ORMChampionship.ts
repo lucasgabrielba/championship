@@ -1,11 +1,12 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { ORMScore } from './ORMScore';
 import { ORMBase } from './utils/ORMBase';
-import { Score } from '../../../championship/domain/entities/Score';
 import { Championship } from '../../../championship/domain/entities/Championship';
 import { ChampionshipDTO } from '../../../championship/DTO/ChampionshipDTO';
+import { Injectable } from '@nestjs/common';
 
-@Entity()
+@Injectable()
+@Entity('Championship')
 export class ORMChampionship extends ORMBase {
   @Column()
   name: string;
@@ -48,7 +49,7 @@ export class ORMChampionship extends ORMBase {
       updatedAt: this.updatedAt ? this.updatedAt.toISOString() : null,
       deletedAt: this.deletedAt ? this.deletedAt.toISOString() : null,
     };
-
+    console.log(dto);
     return Championship.reconstitute(dto).data;
   }
 }

@@ -5,9 +5,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ORMChampionship } from './entities/ORMChampionship';
 import { ORMDriver } from './entities/ORMDriver';
 import { ORMScore } from './entities/ORMScore';
+import { ORMModule } from './entities/orm.module';
 
 @Module({
   imports: [
+    ORMModule,
     ConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

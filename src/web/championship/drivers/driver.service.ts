@@ -35,7 +35,7 @@ export class DriverService {
   ): Promise<Result<Driver>> {
     const entity = await this.applicationService.getById(id);
 
-    if (entity.isFailure) {
+    if (entity.isFailure()) {
       return Result.fail(new Error(entity.error.toString()));
     }
 

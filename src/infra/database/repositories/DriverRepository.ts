@@ -1,22 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectLiteral, QueryFailedError, Repository } from 'typeorm';
-import { DriverRepositoryInterface } from '../../../championship/domain/repository/DriverRepositoryInterface';
+import {
+  DataSource,
+  ObjectLiteral,
+  QueryFailedError,
+  Repository,
+} from 'typeorm';
 import { ORMDriver } from '../entities/ORMDriver';
-import { Driver } from '../../../championship/domain/entities/Driver';
 import { Result } from '../../../../kernel/Result/Result';
+import { DriverRepositoryInterface } from '../../../championship/domain/repository/DriverRepositoryInterface';
+import { Driver } from '../../../championship/domain/entities/Driver';
 import { DriverFilter } from '../../../championship/filters/DriverFilter';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
-export class DriverRepository implements DriverRepositoryInterface {
-  constructor(
-    @InjectRepository(ORMDriver)
-    private repository: Repository<ORMDriver>,
-  ) {}
+export class DriverRepository
+  extends Repository<ORMDriver>
+  implements DriverRepositoryInterface {
+  constructor(dataSource: DataSource) {
+    super(ORMDriver, dataSource.createEntityManager());
+  }
 
   async persist(instance: Driver): Promise<Result<void>> {
     try {
-      await this.repository.save(ORMDriver.import(instance));
+      await this.save(ORMDriver.import(instance));
       return Result.ok();
     } catch (e) {
       if (e instanceof QueryFailedError) {
@@ -27,7 +32,7 @@ export class DriverRepository implements DriverRepositoryInterface {
   }
 
   async findById(id: string): Promise<Result<Driver>> {
-    const result = await this.repository.findOne({
+    const result = await this.findOne({
       where: { id: id.toString() },
     });
     if (!result) {
@@ -37,11 +42,11 @@ export class DriverRepository implements DriverRepositoryInterface {
     return Result.ok<Driver>(result.export());
   }
 
-  async findOne(options: DriverFilter): Promise<Result<Driver>> {
+  async findOneEnity(options: DriverFilter): Promise<Result<Driver>> {
     const where: ObjectLiteral = options.where || {};
 
     try {
-      const result = await this.repository.findOne({ where });
+      const result = await this.findOne({ where });
       if (!result) {
         return Result.fail(new Error('not found'));
       }
@@ -52,19 +57,19 @@ export class DriverRepository implements DriverRepositoryInterface {
       return Result.fail(error);
     }
   }
-  async find(): Promise<Result<Driver[]>> {
-    const result = await this.repository.find();
+  async findEntity(): Promise<Result<Driver[]>> {
+    const result = await this.find();
     const results = result.map((Driver) => Driver.export());
     return Result.ok(results);
   }
 
-  async delete(instance: Driver): Promise<Result<void>> {
+  async deleteEntity(instance: Driver): Promise<Result<void>> {
     try {
-      const entity = await this.repository.findOne({
+      const entity = await this.findOne({
         where: { id: instance.id.toString() },
       });
       if (!entity) return Result.fail(new Error('invalid'));
-      await this.repository.softRemove(entity);
+      await this.softRemove(entity);
       return Result.ok<void>();
     } catch (e) {
       if (e instanceof QueryFailedError) {

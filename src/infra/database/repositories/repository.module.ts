@@ -2,11 +2,14 @@ import { Module, Global } from '@nestjs/common';
 import { ChampionshipRepository } from './ChampionshipRepository';
 import { ScoreRepository } from './ScoreRepository';
 import { DriverRepository } from './DriverRepository';
-import { DatabaseModule } from '../database.module';
+import { ORMChampionship } from '../entities/ORMChampionship';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ORMDriver } from '../entities/ORMDriver';
+import { ORMScore } from '../entities/ORMScore';
 
 @Global()
 @Module({
-  imports: [DatabaseModule],
+  imports: [TypeOrmModule.forFeature([ORMChampionship, ORMDriver, ORMScore])],
   providers: [ChampionshipRepository, DriverRepository, ScoreRepository],
   exports: [ChampionshipRepository, DriverRepository, ScoreRepository],
 })

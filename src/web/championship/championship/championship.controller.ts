@@ -8,44 +8,53 @@ import {
   Param,
 } from '@nestjs/common';
 import {
-  Championship,
   CreateChampionshipPropsPrimitive,
   UpdateChampionshipPropsPrimitive,
 } from '../../../championship/domain/entities/Championship';
 import { ChampionshipService } from './championship.service';
-import { Result } from '../../../../kernel/Result/Result';
+import { ChampionshipDTO } from '../../../championship/DTO/ChampionshipDTO';
 
-@Controller('championship')
+@Controller('Championship')
 export class ChampionshipController {
   constructor(private readonly service: ChampionshipService) {}
 
   @Get()
-  async findAll(): Promise<Result<Championship[]>> {
-    return await this.service.listAllChampionship();
+  async findAll(): Promise<ChampionshipDTO[]> {
+    const result = await this.service.listAllChampionship();
+
+    return result.data.map((Championship) => Championship.toDTO());
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Result<Championship>> {
-    return await this.service.findOne(id);
+  async findOne(@Param('id') id: string): Promise<ChampionshipDTO> {
+    const result = await this.service.findOne(id);
+
+    return result.data.toDTO();
   }
 
   @Post()
   async create(
     @Body() data: CreateChampionshipPropsPrimitive,
-  ): Promise<Result<Championship>> {
-    return await this.service.create(data);
+  ): Promise<ChampionshipDTO> {
+    const result = await this.service.create(data);
+
+    return result.data.toDTO();
   }
 
   @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() data: UpdateChampionshipPropsPrimitive,
-  ): Promise<Result<Championship>> {
-    return await this.service.update(id, data);
+  ): Promise<ChampionshipDTO> {
+    const result = await this.service.update(id, data);
+
+    return result.data.toDTO();
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<Result<boolean>> {
-    return await this.service.remove(id);
+  async delete(@Param('id') id: string): Promise<boolean> {
+    const result = await this.service.remove(id);
+
+    return result.data;
   }
 }

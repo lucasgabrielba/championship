@@ -19,7 +19,7 @@ export class DriverDomainService extends AbstractDomainService<
   async create(data: CreateDriverProps): Promise<Result<Driver>> {
     const created = Driver.create(data);
 
-    if (created.isFailure) {
+    if (created.isFailure()) {
       return Result.fail(created.error);
     }
 
@@ -29,7 +29,7 @@ export class DriverDomainService extends AbstractDomainService<
   async update(data: DriverDTO): Promise<Result<Driver>> {
     const built = await this.build(data);
 
-    if (built.isFailure) {
+    if (built.isFailure()) {
       return Result.fail(
         new Error(
           `Não foi possível construir ${Driver.LABEL} a partir dos dados informados.`,
@@ -40,7 +40,7 @@ export class DriverDomainService extends AbstractDomainService<
     const instance = built.data;
     const saved = await this.save(instance);
 
-    if (saved.isFailure) {
+    if (saved.isFailure()) {
       return Result.fail(
         new Error(`Não foi possível salvar ${Driver.LABEL}".`),
       );
@@ -52,7 +52,7 @@ export class DriverDomainService extends AbstractDomainService<
   async build(data: DriverDTO): Promise<Result<Driver>> {
     const created = Driver.reconstitute(data);
 
-    if (created.isFailure) {
+    if (created.isFailure()) {
       return Result.fail(created.error);
     }
 

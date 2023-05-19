@@ -1,22 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectLiteral, QueryFailedError, Repository } from 'typeorm';
+import {
+  DataSource,
+  ObjectLiteral,
+  QueryFailedError,
+  Repository,
+} from 'typeorm';
 import { ChampionshipRepositoryInterface } from '../../../championship/domain/repository/ChampionshipRepositoryInterface';
 import { ORMChampionship } from '../entities/ORMChampionship';
 import { Championship } from '../../../championship/domain/entities/Championship';
 import { Result } from '../../../../kernel/Result/Result';
 import { ChampionshipFilter } from '../../../championship/filters/ChampionshipFilter';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
-export class ChampionshipRepository implements ChampionshipRepositoryInterface {
-  constructor(
-    @InjectRepository(ORMChampionship)
-    private repository: Repository<ORMChampionship>,
-  ) {}
+export class ChampionshipRepository
+  extends Repository<ORMChampionship>
+  implements ChampionshipRepositoryInterface {
+  constructor(dataSource: DataSource) {
+    super(ORMChampionship, dataSource.createEntityManager());
+  }
 
   async persist(instance: Championship): Promise<Result<void>> {
     try {
-      await this.repository.save(ORMChampionship.import(instance));
+      await this.save(ORMChampionship.import(instance));
       return Result.ok();
     } catch (e) {
       if (e instanceof QueryFailedError) {
@@ -27,7 +32,7 @@ export class ChampionshipRepository implements ChampionshipRepositoryInterface {
   }
 
   async findById(id: string): Promise<Result<Championship>> {
-    const result = await this.repository.findOne({
+    const result = await this.findOne({
       where: { id: id.toString() },
     });
     if (!result) {
@@ -37,11 +42,13 @@ export class ChampionshipRepository implements ChampionshipRepositoryInterface {
     return Result.ok<Championship>(result.export());
   }
 
-  async findOne(options: ChampionshipFilter): Promise<Result<Championship>> {
+  async findOneEnity(
+    options: ChampionshipFilter,
+  ): Promise<Result<Championship>> {
     const where: ObjectLiteral = options.where || {};
 
     try {
-      const result = await this.repository.findOne({ where });
+      const result = await this.findOne({ where });
       if (!result) {
         return Result.fail(new Error('not found'));
       }
@@ -52,19 +59,19 @@ export class ChampionshipRepository implements ChampionshipRepositoryInterface {
       return Result.fail(error);
     }
   }
-  async find(): Promise<Result<Championship[]>> {
-    const result = await this.repository.find();
+  async findEntity(): Promise<Result<Championship[]>> {
+    const result = await this.find();
     const results = result.map((Championship) => Championship.export());
     return Result.ok(results);
   }
 
-  async delete(instance: Championship): Promise<Result<void>> {
+  async deleteEntity(instance: Championship): Promise<Result<void>> {
     try {
-      const entity = await this.repository.findOne({
-        where: { id: instance.id.toString() },
+      const entity = await this.findOne({
+        where: { id: instance.id },
       });
       if (!entity) return Result.fail(new Error('invalid'));
-      await this.repository.softRemove(entity);
+      await this.softRemove(entity);
       return Result.ok<void>();
     } catch (e) {
       if (e instanceof QueryFailedError) {

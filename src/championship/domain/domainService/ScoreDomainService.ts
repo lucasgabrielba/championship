@@ -19,7 +19,7 @@ export class ScoreDomainService extends AbstractDomainService<
   async create(data: CreateScoreProps): Promise<Result<Score>> {
     const created = Score.create(data);
 
-    if (created.isFailure) {
+    if (created.isFailure()) {
       return Result.fail(created.error);
     }
 
@@ -29,7 +29,7 @@ export class ScoreDomainService extends AbstractDomainService<
   async update(data: ScoreDTO): Promise<Result<Score>> {
     const built = await this.build(data);
 
-    if (built.isFailure) {
+    if (built.isFailure()) {
       return Result.fail(
         new Error(
           `Não foi possível construir ${Score.LABEL} a partir dos dados informados.`,
@@ -40,7 +40,7 @@ export class ScoreDomainService extends AbstractDomainService<
     const instance = built.data;
     const saved = await this.save(instance);
 
-    if (saved.isFailure) {
+    if (saved.isFailure()) {
       return Result.fail(new Error(`Não foi possível salvar ${Score.LABEL}".`));
     }
 
@@ -50,7 +50,7 @@ export class ScoreDomainService extends AbstractDomainService<
   async build(data: ScoreDTO): Promise<Result<Score>> {
     const created = Score.reconstitute(data);
 
-    if (created.isFailure) {
+    if (created.isFailure()) {
       return Result.fail(created.error);
     }
 

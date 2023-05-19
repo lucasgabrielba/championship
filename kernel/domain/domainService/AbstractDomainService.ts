@@ -12,33 +12,33 @@ export abstract class AbstractDomainService<
   constructor(protected repository: Repository) {}
 
   async filter(options?: FilterOptions): Promise<Result<Model[]>> {
-    const fetched = await (this.repository as any).find(options);
+    const fetched = await (this.repository as any).findEntity(options);
 
-    if (fetched.isFailure) {
+    if (fetched.isFailure()) {
       return Result.fail(fetched.error);
     }
 
-    return Result.ok<Model[]>(fetched.getValue());
+    return Result.ok<Model[]>(fetched.data);
   }
 
   async get(id: string): Promise<Result<Model>> {
     const fetched = await (this.repository as any).findById(id);
 
-    if (fetched.isFailure) {
+    if (fetched.isFailure()) {
       return Result.fail(fetched.error);
     }
 
-    return Result.ok<Model>(fetched.getValue());
+    return Result.ok<Model>(fetched.data);
   }
 
   async getOne(options: FilterOptions): Promise<Result<Model>> {
-    const fetched = await (this.repository as any).findOne(options);
+    const fetched = await (this.repository as any).findOneEntity(options);
 
-    if (fetched.isFailure) {
+    if (fetched.isFailure()) {
       return Result.fail(fetched.error);
     }
 
-    return Result.ok<Model>(fetched.getValue());
+    return Result.ok<Model>(fetched.data);
   }
 
   abstract create(data: CreateProps): Promise<Result<Model>>;
@@ -48,7 +48,7 @@ export abstract class AbstractDomainService<
   async save(instance: Model): Promise<Result<void>> {
     const saved = await (this.repository as any).persist(instance);
 
-    if (saved.isFailure) {
+    if (saved.isFailure()) {
       return Result.fail(saved.error);
     }
 
@@ -58,14 +58,14 @@ export abstract class AbstractDomainService<
   async createAndSave(data: CreateProps): Promise<Result<Model>> {
     const created = await this.create(data);
 
-    if (created.isFailure) {
+    if (created.isFailure()) {
       return Result.fail(created.error);
     }
 
     const instance = created.data;
     const saved = await this.save(instance);
     // const saved = await (this.repository as any).persist(instance);
-    if (saved.isFailure) {
+    if (saved.isFailure()) {
       return Result.fail(saved.error);
     }
 
@@ -73,9 +73,9 @@ export abstract class AbstractDomainService<
   }
 
   async remove(instance: Model): Promise<Result<void>> {
-    const deleted = await (this.repository as any).delete(instance);
+    const deleted = await (this.repository as any).deleteEntity(instance);
 
-    if (deleted.isFailure) {
+    if (deleted.isFailure()) {
       return Result.fail(deleted.error);
     }
 

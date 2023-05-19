@@ -8,44 +8,51 @@ import {
   Param,
 } from '@nestjs/common';
 import {
-  Score,
   CreateScorePropsPrimitive,
   UpdateScorePropsPrimitive,
 } from '../../../championship/domain/entities/Score';
-import { ScoreService } from './Score.service';
-import { Result } from '../../../../kernel/Result/Result';
+import { ScoreService } from './score.service';
+import { ScoreDTO } from '../../../championship/DTO/ScoreDTO';
 
 @Controller('score')
 export class ScoreController {
   constructor(private readonly service: ScoreService) {}
 
   @Get()
-  async findAll(): Promise<Result<Score[]>> {
-    return await this.service.listAllScore();
+  async findAll(): Promise<ScoreDTO[]> {
+    const result = await this.service.listAllScore();
+
+    return result.data.map((score) => score.toDTO());
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Result<Score>> {
-    return await this.service.findOne(id);
+  async findOne(@Param('id') id: string): Promise<ScoreDTO> {
+    const result = await this.service.findOne(id);
+
+    return result.data.toDTO();
   }
 
   @Post()
-  async create(
-    @Body() data: CreateScorePropsPrimitive,
-  ): Promise<Result<Score>> {
-    return await this.service.create(data);
+  async create(@Body() data: CreateScorePropsPrimitive): Promise<ScoreDTO> {
+    const result = await this.service.create(data);
+
+    return result.data.toDTO();
   }
 
   @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() data: UpdateScorePropsPrimitive,
-  ): Promise<Result<Score>> {
-    return await this.service.update(id, data);
+  ): Promise<ScoreDTO> {
+    const result = await this.service.update(id, data);
+
+    return result.data.toDTO();
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<Result<boolean>> {
-    return await this.service.remove(id);
+  async delete(@Param('id') id: string): Promise<boolean> {
+    const result = await this.service.remove(id);
+
+    return result.data;
   }
 }

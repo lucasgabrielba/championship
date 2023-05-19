@@ -1,5 +1,5 @@
-import { uuid } from 'uuidv4';
-import Joi from 'joi';
+import { v4 } from 'uuid';
+import * as Joi from 'joi';
 import { Result } from '../../../../kernel/Result/Result.js';
 import { ChampionshipDTO } from '../../DTO/ChampionshipDTO.js';
 import {
@@ -21,7 +21,7 @@ export interface CreateChampionshipProps
 
 export interface ChampionshipProps
   extends CreateChampionshipProps,
-    AuditableProps {}
+  AuditableProps {}
 
 export class Championship extends Auditable {
   constructor(protected props: ChampionshipProps) {
@@ -44,7 +44,7 @@ export class Championship extends Auditable {
 
   static create(props: CreateChampionshipProps): Result<Championship> {
     const validated = Championship.validate({
-      id: uuid(),
+      id: v4(),
       name: props.name,
       rounds: props.rounds,
       stage: 0,
@@ -53,7 +53,7 @@ export class Championship extends Auditable {
       deletedAt: undefined,
     });
 
-    if (validated.isFailure) {
+    if (validated.isFailure()) {
       return Result.fail(validated.error);
     }
 
@@ -63,13 +63,13 @@ export class Championship extends Auditable {
   static reconstitute(props: ChampionshipDTO): Result<Championship> {
     const validated = Championship.validate({
       ...props,
-      id: uuid(),
+      id: props.id ?? v4(),
       createdAt: props.createdAt ? new Date(props.createdAt) : undefined,
       updatedAt: props.updatedAt ? new Date(props.updatedAt) : undefined,
       deletedAt: props.deletedAt ? new Date(props.deletedAt) : undefined,
     });
 
-    if (validated.isFailure) {
+    if (validated.isFailure()) {
       return Result.fail(validated.error);
     }
 
@@ -86,7 +86,6 @@ export class Championship extends Auditable {
       updatedAt: Joi.object().instance(Date).optional(),
       deletedAt: Joi.object().instance(Date).optional(),
     };
-
     const { value, error } = Joi.object(schema).unknown().validate(data);
 
     if (error) {

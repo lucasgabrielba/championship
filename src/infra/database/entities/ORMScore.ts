@@ -4,8 +4,10 @@ import { ORMChampionship } from './ORMChampionship';
 import { ORMDriver } from './ORMDriver';
 import { Score } from '../../../championship/domain/entities/Score';
 import { ScoreDTO } from '../../../championship/DTO/ScoreDTO';
+import { Injectable } from '@nestjs/common';
 
-@Entity()
+@Injectable()
+@Entity('Score')
 export class ORMScore extends ORMBase {
   @ManyToOne(() => ORMChampionship, (championship) => championship.scores)
   championship: ORMChampionship;

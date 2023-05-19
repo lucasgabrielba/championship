@@ -6,7 +6,7 @@ import {
 } from '../../../championship/domain/entities/Score';
 import { ScoreApplicationService } from '../../../championship/application/service/ScoreApplicationService';
 import { Result } from '../../../../kernel/Result/Result';
-import { ScoreDTOPrimitive } from '../../../championship/DTO/ScoreDTO';
+
 import { ScoreEntrypoint } from 'entrypoint/score.entrypoint';
 
 @Injectable()
@@ -34,21 +34,7 @@ export class ScoreService {
     id: string,
     data: UpdateScorePropsPrimitive,
   ): Promise<Result<Score>> {
-    const entity = await this.applicationService.getById(id);
-
-    if (entity.isFailure) {
-      return Result.fail(new Error(entity.error.toString()));
-    }
-
-    const scoreData = entity.data.toDTO();
-    const scoreDTO: ScoreDTOPrimitive = {
-      ...scoreData,
-      ...data,
-      championshipId: data.championshipId ?? scoreData.championship.id,
-      driverId: data.driverId ?? scoreData.driver.id,
-    };
-
-    return await this.applicationService.update(scoreDTO);
+    return await this.applicationService.updateScore(id, data);
   }
 
   async remove(id: string): Promise<Result<boolean>> {

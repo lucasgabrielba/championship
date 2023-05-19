@@ -28,7 +28,7 @@ export class ChampionshipApplicationService extends AbstractApplicationService<
     }
 
     const retrieved = await this.manager.get(id);
-    if (retrieved.isFailure) {
+    if (retrieved.isFailure()) {
       return Result.fail(
         new Error(`Não foi possível resgatar "${this.getModelLabel()}".`),
       );
@@ -44,7 +44,7 @@ export class ChampionshipApplicationService extends AbstractApplicationService<
   async filter(options: ChampionshipFilter): Promise<Result<Championship[]>> {
     const fetched = await this.manager.filter(options);
 
-    if (fetched.isFailure) {
+    if (fetched.isFailure()) {
       return Result.fail(
         new Error(
           `Não foi possível resgatar registros de "${this.getModelLabel()}".`,
