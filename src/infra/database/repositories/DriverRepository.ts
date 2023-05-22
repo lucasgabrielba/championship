@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  DataSource,
-  ObjectLiteral,
-  QueryFailedError,
-  Repository,
-} from 'typeorm';
+import { DataSource, QueryFailedError, Repository } from 'typeorm';
 import { ORMDriver } from '../entities/ORMDriver';
 import { Result } from '../../../../kernel/Result/Result';
 import { DriverRepositoryInterface } from '../../../championship/domain/repository/DriverRepositoryInterface';
@@ -42,11 +37,9 @@ export class DriverRepository
     return Result.ok<Driver>(result.export());
   }
 
-  async findOneEnity(options: DriverFilter): Promise<Result<Driver>> {
-    const where: ObjectLiteral = options.where || {};
-
+  async findOneEntity(where: object): Promise<Result<Driver>> {
     try {
-      const result = await this.findOne({ where });
+      const result = await this.findOne({ where: where });
       if (!result) {
         return Result.fail(new Error('not found'));
       }

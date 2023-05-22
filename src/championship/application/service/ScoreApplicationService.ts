@@ -1,8 +1,10 @@
 import { Result } from '../../../../kernel/Result/Result';
 import { AbstractApplicationService } from '../../../../kernel/application/service/AbstactApplicationService';
 import { isUUID } from '../../../../kernel/isUUID/isUUID';
+import { DriverDTO } from '../../DTO/DriverDTO';
 import { ScoreDTO, ScoreDTOPrimitive } from '../../DTO/ScoreDTO';
 import { ScoreDomainService } from '../../domain/domainService/ScoreDomainService';
+import { Driver } from '../../domain/entities/Driver';
 import {
   Score,
   CreateScorePropsPrimitive,
@@ -45,6 +47,22 @@ export class ScoreApplicationService extends AbstractApplicationService<
     return Result.ok<Score>(retrieved.data);
   }
 
+  async findTable(id: string): Promise<Result<Score[]>> {
+    const result = await this.manager.filter({
+      championship: { id: id },
+    });
+
+    if (result.isFailure()) {
+      return Result.fail(
+        new Error(`Não foi possível resgatar "${this.getModelLabel()}s".`),
+      );
+    }
+
+    const table = result.data.sort((a, b) => b.score - a.score);
+
+    return Result.ok(table);
+  }
+
   async create(data: CreateScorePropsPrimitive): Promise<Result<Score>> {
     const championship = await this.championshipAppService.getById(
       data.championshipId,
@@ -82,21 +100,21 @@ export class ScoreApplicationService extends AbstractApplicationService<
     const entity = await this.getById(id);
     let championship;
     let driver;
-    console.log(85);
+
     if (entity.isFailure()) {
       return Result.fail(entity.error);
     }
-    console.log(89);
+
     if (data.championshipId) {
       championship = await this.championshipAppService.getById(
         data.championshipId,
       );
-      console.log(94);
+
       if (championship.isFailure()) {
         return Result.fail(championship.error);
       }
     }
-    console.log(99);
+
     if (data.driverId) {
       championship = await this.driverAppService.getById(data.driverId);
 
@@ -104,15 +122,15 @@ export class ScoreApplicationService extends AbstractApplicationService<
         return Result.fail(driver.error);
       }
     }
-    console.log(107);
+
     const scoreData = entity.data.toDTO();
     const scoreDTO: ScoreDTO = {
       ...scoreData,
       championship: data.championshipId ? championship : scoreData.championship,
       driver: data.driverId ? driver : scoreData.driver,
-      score: data.score ? data.score : scoreData.score,
+      score: data.score || data.score === 0 ? data.score : scoreData.score,
     };
-    console.log(scoreDTO);
+
     const result = await this.manager.update(scoreDTO);
 
     if (result.isFailure()) {
@@ -140,7 +158,204 @@ export class ScoreApplicationService extends AbstractApplicationService<
     return Result.ok<Score[]>(fetched.data);
   }
 
+  async createMany(data: string[]): Promise<Result<Score[]>> {
+    const championshipId = data.shift();
+
+    const scores: Score[] = [];
+    for (const runner of data) {
+      let driver: Result<Driver>;
+      const existDriver = await this.driverAppService.get({
+        name: runner,
+      });
+
+      if (existDriver.isSuccess()) {
+        driver = existDriver;
+
+        const existScore = await this.manager.getOne({
+          driver: { name: driver.data.name },
+        });
+
+        if (existScore.isFailure()) {
+          const scoreData = {
+            championshipId: championshipId,
+            driverId: driver.data.id,
+            score: 0,
+          };
+
+          const createdScore = await this.create(scoreData);
+
+          if (createdScore.isFailure()) {
+            return Result.fail(
+              new Error(`Não foi possível criar "${this.getModelLabel()}".`),
+            );
+          }
+        }
+
+        scores.push(existScore.data);
+      }
+
+      if (existDriver.isFailure()) {
+        const createData = {
+          name: runner,
+        };
+
+        driver = await this.driverAppService.create(createData);
+
+        if (driver.isFailure()) {
+          return Result.fail(
+            new Error(`Não foi possível criar "${this.getModelLabel()}".`),
+          );
+        }
+
+        const scoreData = {
+          championshipId: championshipId,
+          driverId: driver.data.id,
+          score: 0,
+        };
+
+        const createdScore = await this.create(scoreData);
+
+        if (createdScore.isFailure()) {
+          return Result.fail(
+            new Error(`Não foi possível criar "${this.getModelLabel()}".`),
+          );
+        }
+
+        scores.push(createdScore.data);
+      }
+    }
+
+    const allDriversOnChampionship = await this.manager.filter({
+      championship: { id: championshipId },
+    });
+
+    const excludeThis = allDriversOnChampionship.data.filter(
+      (item) => !scores.some((scoreItem) => scoreItem.id === item.id),
+    );
+
+    for (const score of excludeThis) {
+      if (score) {
+        const exclude = await this.manager.remove(score);
+
+        if (exclude.isFailure()) {
+          return Result.fail(exclude.error);
+        }
+      }
+    }
+
+    const allDriversOnChampionshipUpdated = await this.manager.filter({
+      championship: { id: championshipId },
+    });
+
+    return Result.ok(allDriversOnChampionshipUpdated.data);
+  }
+
+  async addScore(
+    championshipId: string,
+    data: DriverDTO[],
+  ): Promise<Result<boolean>> {
+    for (let i = 0; i < data.length; i++) {
+      const driver = data[i];
+
+      const score = await this.manager.filter({
+        championship: { id: championshipId },
+        driver: { id: driver.id },
+      });
+
+      const points = score.data[0].score;
+
+      const driverData = {
+        score: this.calculateScore(i, points),
+      };
+
+      const addPoints = await this.updateScore(score.data[0].id, driverData);
+
+      if (addPoints.isFailure()) {
+        return Result.fail(new Error('Não foi possivel adicionar score'));
+      }
+    }
+
+    const championship = await this.championshipAppService.getById(
+      championshipId,
+    );
+
+    if (championship.isFailure()) {
+      return Result.fail(new Error('Not Found Championship'));
+    }
+
+    const championshipDataUpdate = {
+      ...championship.data.toDTO(),
+      stage: championship.data.stage + 1,
+    };
+
+    const championshipUpdate = await this.championshipAppService.update(
+      championshipDataUpdate,
+    );
+
+    if (championshipUpdate.isFailure()) {
+      return Result.fail(new Error('Error when updating stage'));
+    }
+
+    return Result.ok(true);
+  }
+
+  async resetScores(data: ScoreDTO[]): Promise<Result<boolean>> {
+    for (let i = 0; i < data.length; i++) {
+      const driverId = data[i].id;
+
+      const driverData = {
+        score: 0,
+      };
+
+      const resetPoints = await this.updateScore(driverId, driverData);
+
+      if (resetPoints.isFailure()) {
+        return Result.fail(new Error('Unable to reset score'));
+      }
+    }
+
+    const championship = data[0].championship;
+
+    const championshipDataUpdate = {
+      ...championship,
+      stage: 0,
+    };
+
+    const championshipUpdate = await this.championshipAppService.update(
+      championshipDataUpdate,
+    );
+
+    if (championshipUpdate.isFailure()) {
+      return Result.fail(new Error('Error when updating stage'));
+    }
+
+    return Result.ok(true);
+  }
+
   getModelLabel(): string {
     return Score.LABEL;
   }
+
+  calculateScore = (position: number, score: number) => {
+    switch (position) {
+      case 0:
+        return score + 10;
+      case 1:
+        return score + 8;
+      case 2:
+        return score + 6;
+      case 3:
+        return score + 5;
+      case 4:
+        return score + 4;
+      case 5:
+        return score + 3;
+      case 6:
+        return score + 2;
+      case 7:
+        return score + 1;
+      default:
+        return score + 0;
+    }
+  };
 }

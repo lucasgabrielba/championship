@@ -9,7 +9,6 @@ import { ORMScore } from '../entities/ORMScore';
 import { Result } from '../../../../kernel/Result/Result';
 import { ScoreRepositoryInterface } from '../../../championship/domain/repository/ScoreRepositoryInterface';
 import { Score } from '../../../championship/domain/entities/Score';
-import { ScoreFilter } from '../../../championship/filters/ScoreFilter';
 
 @Injectable()
 export class ScoreRepository
@@ -43,12 +42,10 @@ export class ScoreRepository
     return Result.ok<Score>(result.export());
   }
 
-  async findOneEnity(options: ScoreFilter): Promise<Result<Score>> {
-    const where: ObjectLiteral = options.where || {};
-
+  async findOneEntity(where?: object): Promise<Result<Score>> {
     try {
       const result = await this.findOne({
-        where,
+        where: where,
         relations: ['championship', 'driver'],
       });
       if (!result) {
@@ -61,8 +58,9 @@ export class ScoreRepository
       return Result.fail(error);
     }
   }
-  async findEntity(): Promise<Result<Score[]>> {
+  async findEntity(where?: object): Promise<Result<Score[]>> {
     const result = await this.find({
+      where: where,
       relations: ['championship', 'driver'],
     });
 

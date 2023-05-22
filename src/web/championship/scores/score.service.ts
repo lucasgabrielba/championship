@@ -8,6 +8,8 @@ import { ScoreApplicationService } from '../../../championship/application/servi
 import { Result } from '../../../../kernel/Result/Result';
 
 import { ScoreEntrypoint } from 'entrypoint/score.entrypoint';
+import { DriverDTO } from '../../../championship/DTO/DriverDTO';
+import { ScoreDTO } from '../../../championship/DTO/ScoreDTO';
 
 @Injectable()
 export class ScoreService {
@@ -26,8 +28,16 @@ export class ScoreService {
     return await this.applicationService.getById(id);
   }
 
+  async findTable(id: string): Promise<Result<Score[]>> {
+    return await this.applicationService.findTable(id);
+  }
+
   async create(data: CreateScorePropsPrimitive): Promise<Result<Score>> {
     return await this.applicationService.create(data);
+  }
+
+  async createMany(data: string[]): Promise<Result<Score[]>> {
+    return await this.applicationService.createMany(data);
   }
 
   async update(
@@ -35,6 +45,14 @@ export class ScoreService {
     data: UpdateScorePropsPrimitive,
   ): Promise<Result<Score>> {
     return await this.applicationService.updateScore(id, data);
+  }
+
+  async addScore(id, data: DriverDTO[]): Promise<Result<boolean>> {
+    return await this.applicationService.addScore(id, data);
+  }
+
+  async resetScores(data: ScoreDTO[]): Promise<Result<boolean>> {
+    return await this.applicationService.resetScores(data);
   }
 
   async remove(id: string): Promise<Result<boolean>> {

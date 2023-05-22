@@ -5,6 +5,7 @@ export interface ChampionshipFilter {
     name: string;
     rounds: number;
     stage: number;
+    bet: string;
   };
   order?: {
     column: keyof Championship;

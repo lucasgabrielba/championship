@@ -1,11 +1,12 @@
-import { Championship } from '../domain/entities/Championship';
-import { Driver } from '../domain/entities/Driver';
+import { ChampionshipDTO } from '../DTO/ChampionshipDTO';
+import { DriverDTO } from '../DTO/DriverDTO';
 import { Score } from '../domain/entities/Score';
 
 export interface ScoreFilter {
   where?: {
-    driver?: Driver;
-    championship?: Championship;
+    id: string;
+    driver?: DriverDTO;
+    championship?: ChampionshipDTO;
     position?: number;
   };
   order?: {

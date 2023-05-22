@@ -5,7 +5,7 @@ export interface RepositoryInterface<Entity, FilterOptions> {
 
   findById(id: string): Promise<Result<Entity | undefined>>;
 
-  findOneEnity(options: FilterOptions): Promise<Result<Entity | undefined>>;
+  findOneEntity(options: FilterOptions): Promise<Result<Entity | undefined>>;
 
   findEntity(options?: FilterOptions): Promise<Result<Entity[]>>;
 

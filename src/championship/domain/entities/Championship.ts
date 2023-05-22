@@ -11,6 +11,7 @@ export interface CreateChampionshipPropsPrimitive {
   name: string;
   rounds: number;
   stage: number;
+  bet: string;
 }
 
 export interface UpdateChampionshipPropsPrimitive
@@ -42,11 +43,16 @@ export class Championship extends Auditable {
     return this.props.stage;
   }
 
+  get bet(): string {
+    return this.props.bet;
+  }
+
   static create(props: CreateChampionshipProps): Result<Championship> {
     const validated = Championship.validate({
       id: v4(),
       name: props.name,
       rounds: props.rounds,
+      bet: props.bet,
       stage: 0,
       createdAt: new Date(),
       updatedAt: undefined,
@@ -82,6 +88,7 @@ export class Championship extends Auditable {
       name: Joi.string().min(1).max(255).required(),
       rounds: Joi.number().min(1).max(10).required(),
       stage: Joi.number().max(10).required(),
+      bet: Joi.string().max(255).required(),
       createdAt: Joi.object().instance(Date).required(),
       updatedAt: Joi.object().instance(Date).optional(),
       deletedAt: Joi.object().instance(Date).optional(),
@@ -101,6 +108,7 @@ export class Championship extends Auditable {
       name: this.name,
       rounds: this.rounds,
       stage: this.stage,
+      bet: this.bet,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt ? this.updatedAt.toISOString() : null,
       deletedAt: this.props.deletedAt

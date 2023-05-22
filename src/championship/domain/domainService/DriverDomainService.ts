@@ -16,6 +16,16 @@ export class DriverDomainService extends AbstractDomainService<
     super(repository);
   }
 
+  async getOne(where: object): Promise<Result<Driver>> {
+    const fetched = await this.repository.findOneEntity(where);
+
+    if (fetched.isFailure()) {
+      return Result.fail(fetched.error);
+    }
+
+    return Result.ok<Driver>(fetched.data);
+  }
+
   async create(data: CreateDriverProps): Promise<Result<Driver>> {
     const created = Driver.create(data);
 

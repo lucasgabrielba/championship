@@ -17,6 +17,9 @@ export class ORMChampionship extends ORMBase {
   @Column('integer')
   rounds: number;
 
+  @Column()
+  bet: string;
+
   @OneToMany(() => ORMScore, (score) => score.championship, {
     onDelete: 'CASCADE',
   })
@@ -29,6 +32,7 @@ export class ORMChampionship extends ORMBase {
     entity.name = instance.name;
     entity.rounds = instance.rounds;
     entity.stage = instance.stage;
+    entity.bet = instance.bet;
 
     entity.createdAt = instance.createdAt;
     entity.updatedAt = instance.updatedAt;
@@ -44,12 +48,13 @@ export class ORMChampionship extends ORMBase {
       name: this.name,
       rounds: this.rounds,
       stage: this.stage,
+      bet: this.bet,
 
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt ? this.updatedAt.toISOString() : null,
       deletedAt: this.deletedAt ? this.deletedAt.toISOString() : null,
     };
-    console.log(dto);
+
     return Championship.reconstitute(dto).data;
   }
 }

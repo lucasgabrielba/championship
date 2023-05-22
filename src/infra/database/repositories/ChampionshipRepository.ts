@@ -42,7 +42,7 @@ export class ChampionshipRepository
     return Result.ok<Championship>(result.export());
   }
 
-  async findOneEnity(
+  async findOneEntity(
     options: ChampionshipFilter,
   ): Promise<Result<Championship>> {
     const where: ObjectLiteral = options.where || {};

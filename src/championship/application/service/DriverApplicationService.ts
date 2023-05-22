@@ -37,6 +37,18 @@ export class DriverApplicationService extends AbstractApplicationService<
     return Result.ok(retrieved.data);
   }
 
+  async get(where: object): Promise<Result<Driver>> {
+    const fetched = await this.manager.getOne(where);
+
+    if (fetched.isFailure()) {
+      return Result.fail(
+        new Error(`Não foi possível resgatar "${this.getModelLabel()}".`),
+      );
+    }
+
+    return Result.ok<Driver>(fetched.data);
+  }
+
   async all(options?: DriverFilter): Promise<Result<Driver[]>> {
     return this.filter(options as any);
   }

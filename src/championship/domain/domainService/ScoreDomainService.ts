@@ -16,6 +16,26 @@ export class ScoreDomainService extends AbstractDomainService<
     super(repository);
   }
 
+  async filter(where: object): Promise<Result<Score[]>> {
+    const fetched = await this.repository.findEntity(where);
+
+    if (fetched.isFailure()) {
+      return Result.fail(fetched.error);
+    }
+
+    return Result.ok<Score[]>(fetched.data);
+  }
+
+  async getOne(where: object): Promise<Result<Score>> {
+    const fetched = await this.repository.findOneEntity(where);
+
+    if (fetched.isFailure()) {
+      return Result.fail(fetched.error);
+    }
+
+    return Result.ok<Score>(fetched.data);
+  }
+
   async create(data: CreateScoreProps): Promise<Result<Score>> {
     const created = Score.create(data);
 
