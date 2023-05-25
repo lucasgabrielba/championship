@@ -17,7 +17,7 @@ export class ORMChampionship extends ORMBase {
   @Column('integer')
   rounds: number;
 
-  @Column()
+  @Column({ nullable: true })
   bet: string;
 
   @OneToMany(() => ORMScore, (score) => score.championship, {

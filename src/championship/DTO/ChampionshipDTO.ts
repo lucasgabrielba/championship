@@ -5,7 +5,7 @@ export interface ChampionshipDTO extends AuditableDTO {
   name: string;
   rounds: number;
   stage: number;
-  bet: string;
+  bet?: string;
 }
 
 export interface ChampionshipDTOPrimitive extends ChampionshipDTO {}

@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  DataSource,
-  ObjectLiteral,
-  QueryFailedError,
-  Repository,
-} from 'typeorm';
+import { DataSource, QueryFailedError, Repository } from 'typeorm';
 import { ORMScore } from '../entities/ORMScore';
 import { Result } from '../../../../kernel/Result/Result';
 import { ScoreRepositoryInterface } from '../../../championship/domain/repository/ScoreRepositoryInterface';
@@ -48,6 +43,7 @@ export class ScoreRepository
         where: where,
         relations: ['championship', 'driver'],
       });
+
       if (!result) {
         return Result.fail(new Error('not found'));
       }

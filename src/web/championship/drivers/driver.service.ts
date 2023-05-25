@@ -29,6 +29,14 @@ export class DriverService {
     return await this.applicationService.create(data);
   }
 
+  async addChampion(id: string): Promise<Result<Driver>> {
+    return await this.applicationService.addChampion(id);
+  }
+
+  async addLoser(id: string): Promise<Result<Driver>> {
+    return await this.applicationService.addLoser(id);
+  }
+
   async update(
     id: string,
     data: UpdateDriverPropsPrimitive,

@@ -32,6 +32,10 @@ export class ScoreService {
     return await this.applicationService.findTable(id);
   }
 
+  async getStatistics(): Promise<Result<object[]>> {
+    return await this.applicationService.getStatistics();
+  }
+
   async create(data: CreateScorePropsPrimitive): Promise<Result<Score>> {
     return await this.applicationService.create(data);
   }

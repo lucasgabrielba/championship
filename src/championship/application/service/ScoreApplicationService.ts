@@ -63,6 +63,47 @@ export class ScoreApplicationService extends AbstractApplicationService<
     return Result.ok(table);
   }
 
+  async getStatistics(): Promise<Result<object[]>> {
+    const allDrivers = await this.driverAppService.all();
+    if (allDrivers.isFailure()) {
+      return Result.fail(new Error(`Não foi possível resgatar "drivers".`));
+    }
+
+    const dataDrivers: {
+      name: string;
+      championships: number;
+      points: number;
+      wons: number;
+      losts: number;
+    }[] = [];
+    for (const driver of allDrivers.data) {
+      const scores = await this.manager.filter({
+        driver: { id: driver.id },
+      });
+      if (scores.isFailure()) {
+        return Result.fail(new Error(`Não foi possível resgatar "scores".`));
+      }
+
+      const points = scores.data.reduce((value, score) => {
+        return value + score.score;
+      }, 0);
+
+      const data = {
+        name: driver.name,
+        championships: scores.data.length,
+        points: points,
+        wons: driver.won,
+        losts: driver.lost,
+      };
+
+      dataDrivers.push(data);
+    }
+
+    const table = dataDrivers.sort((a, b) => b.points - a.points);
+
+    return Result.ok(table);
+  }
+
   async create(data: CreateScorePropsPrimitive): Promise<Result<Score>> {
     const championship = await this.championshipAppService.getById(
       data.championshipId,
@@ -144,6 +185,18 @@ export class ScoreApplicationService extends AbstractApplicationService<
     return this.filter(options as any);
   }
 
+  async get(where: object): Promise<Result<Score>> {
+    const fetched = await this.manager.getOne(where);
+
+    if (fetched.isFailure()) {
+      return Result.fail(
+        new Error(`Não foi possível resgatar "${this.getModelLabel()}".`),
+      );
+    }
+
+    return Result.ok<Score>(fetched.data);
+  }
+
   async filter(options: ScoreFilter): Promise<Result<Score[]>> {
     const fetched = await this.manager.filter(options);
 
@@ -171,8 +224,9 @@ export class ScoreApplicationService extends AbstractApplicationService<
       if (existDriver.isSuccess()) {
         driver = existDriver;
 
-        const existScore = await this.manager.getOne({
-          driver: { name: driver.data.name },
+        const existScore = await this.get({
+          championship: { id: championshipId },
+          driver: { id: driver.data.id },
         });
 
         if (existScore.isFailure()) {
@@ -197,6 +251,8 @@ export class ScoreApplicationService extends AbstractApplicationService<
       if (existDriver.isFailure()) {
         const createData = {
           name: runner,
+          won: 0,
+          lost: 0,
         };
 
         driver = await this.driverAppService.create(createData);
@@ -230,7 +286,7 @@ export class ScoreApplicationService extends AbstractApplicationService<
     });
 
     const excludeThis = allDriversOnChampionship.data.filter(
-      (item) => !scores.some((scoreItem) => scoreItem.id === item.id),
+      (item) => !data.some((scoreItem) => scoreItem === item?.driver.name),
     );
 
     for (const score of excludeThis) {

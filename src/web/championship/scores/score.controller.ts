@@ -26,6 +26,13 @@ export class ScoreController {
     return result.data.map((score) => score.toDTO());
   }
 
+  @Get('/statistics')
+  async getStatistics(): Promise<object[]> {
+    const result = await this.service.getStatistics();
+
+    return result.data;
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<ScoreDTO> {
     const result = await this.service.findOne(id);

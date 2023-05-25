@@ -49,6 +49,20 @@ export class DriverController {
     return result.data.toDTO();
   }
 
+  @Put('/champion/:id')
+  async addChampion(@Param('id') id: string): Promise<DriverDTO> {
+    const result = await this.service.addChampion(id);
+
+    return result.data.toDTO();
+  }
+
+  @Put('/loser/:id')
+  async addLoser(@Param('id') id: string): Promise<DriverDTO> {
+    const result = await this.service.addLoser(id);
+
+    return result.data.toDTO();
+  }
+
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<boolean> {
     const result = await this.service.delete(id);

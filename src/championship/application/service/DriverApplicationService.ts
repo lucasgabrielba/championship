@@ -70,4 +70,41 @@ export class DriverApplicationService extends AbstractApplicationService<
   getModelLabel(): string {
     return Driver.LABEL;
   }
+
+  async addChampion(id: string): Promise<Result<Driver>> {
+    const driver = await this.getById(id);
+
+    if (driver.isFailure()) {
+      return Result.fail(new Error('Não foi possível regastar piloto'));
+    }
+
+    const updatedDriver = await this.update({
+      ...driver.data.toDTO(),
+      won: driver.data.won + 1,
+    });
+
+    if (updatedDriver.isFailure()) {
+      return Result.fail(new Error('Não foi possível regastar piloto'));
+    }
+
+    return Result.ok(updatedDriver.data);
+  }
+
+  async addLoser(id: string): Promise<Result<Driver>> {
+    const driver = await this.getById(id);
+    if (driver.isFailure()) {
+      return Result.fail(new Error('Não foi possível regastar piloto'));
+    }
+
+    const updatedDriver = await this.update({
+      ...driver.data.toDTO(),
+      lost: driver.data.lost + 1,
+    });
+
+    if (updatedDriver.isFailure()) {
+      return Result.fail(new Error('Não foi possível regastar piloto'));
+    }
+
+    return Result.ok(updatedDriver.data);
+  }
 }

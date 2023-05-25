@@ -11,6 +11,12 @@ export class ORMDriver extends ORMBase {
   @Column()
   name: string;
 
+  @Column({ type: 'integer' })
+  won: number;
+
+  @Column({ type: 'integer' })
+  lost: number;
+
   @OneToMany(() => ORMScore, (score) => score.driver, { onDelete: 'CASCADE' })
   scores?: ORMScore[];
 
@@ -19,6 +25,8 @@ export class ORMDriver extends ORMBase {
     entity.id = instance.id;
 
     entity.name = instance.name;
+    entity.won = instance.won;
+    entity.lost = instance.lost;
 
     entity.createdAt = instance.createdAt;
     entity.updatedAt = instance.updatedAt;
@@ -32,6 +40,8 @@ export class ORMDriver extends ORMBase {
       id: this.id,
 
       name: this.name,
+      won: this.won,
+      lost: this.lost,
 
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt ? this.updatedAt.toISOString() : null,
